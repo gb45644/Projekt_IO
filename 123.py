@@ -1,1 +1,0 @@
-#dlaczego sie nie odswieżasz ścierwo
