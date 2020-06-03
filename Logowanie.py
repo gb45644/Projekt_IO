@@ -1,8 +1,6 @@
 from tkinter import *
 
 
-jedn = 12
-
 def logowanie():
     root = Tk()
     root.title('Logowanie')
@@ -57,4 +55,3 @@ def kierownikm1():
     root.title('Menu 1 - Kierownik')
 
 
-logowanie()
