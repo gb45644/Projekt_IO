@@ -4,23 +4,28 @@ from tkinter import *
 def logowanie():
     root = Tk()
     root.title('Logowanie')
+    root.geometry("800x600")
+    root.configure(background='white')
 
-    theLabel1 = Label(root, text='Wpisz login i hasło:')
+    theLabel1 = Label(root, text='Ultimate planning tool', font=('Arial',24))
+    theLabel1.configure(background='white')
     theLabel1.pack()
 
-    theLabel2 = Label(root, text='login: planista')
+
+    theLabel2 = Label(root, text='Login:', font=('Arial',18))
+    theLabel2.configure(background='white')
     theLabel2.pack()
+
 
     polelogin = Entry(root, width=50)
     polelogin.pack()
-    polelogin.insert(0, 'Login')
 
-    theLabel3 = Label(root, text='hasło:123')
+    theLabel3 = Label(root, text='Hasło:', font=('Arial',18))
+    theLabel3.configure(background='white')
     theLabel3.pack()
 
-    polehaslo = Entry(root, width=50)
+    polehaslo = Entry(root, width=50, show='*')
     polehaslo.pack()
-    polehaslo.insert(0, 'Haslo')
 
     def myClick():
         login2 = polelogin.get()
@@ -29,6 +34,7 @@ def logowanie():
             myLabel = Label(root, text='Zalogowano pomyślnie jako planista')
             myLabel.pack()
             root.destroy()
+            planistam1()
         elif login2 == 'kierownik' and haslo2 == '321':
             myLabel = Label(root, text='Zalogowano pomyślnie jako kierownik')
             myLabel.pack()
@@ -38,8 +44,15 @@ def logowanie():
             myLabel = Label(root, text='Zly login lub haslo')
             myLabel.pack()
 
+    def myClick2():
+        root.destroy()
+
+
     myButton = Button(root, text='Zaloguj się', command=myClick)
     myButton.pack()
+
+    myButton2 = Button(root, text='Wyjdź', command=myClick2)
+    myButton2.pack()
 
     root.mainloop()
 
@@ -47,6 +60,36 @@ def logowanie():
 def kierownikm1():
     root = Tk()
     root.title('Menu 1 - Kierownik')
+
+
+def planistam1():
+    root = Tk()
+    root.title('Menu 1 - Planista')
+
+    def myClick3():
+        root.destroy()
+        planistam2()
+
+    myButton3 = Button(root, text='Planowanie srednio terminowe', command=myClick3)
+    myButton3.pack()
+
+
+def planistam2():
+    root = Tk()
+    root.title('Menu planowania srednio terminowego - Planista')
+
+    def myClick4():
+        root.destroy()
+        planistam3()
+
+
+    myButton4 = Button(root, text='Capacity loading', command=myClick4)
+    myButton4.pack()
+
+def planistam3():
+    root = Tk()
+    root.title('Capacity loading')
+
 
 
 logowanie()
