@@ -1,7 +1,7 @@
 from tkinter import *
 
 
-
+jedn = 12
 
 def logowanie():
     root = Tk()
