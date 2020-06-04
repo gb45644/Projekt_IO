@@ -1,5 +1,5 @@
 from tkinter import *
-
+from LoadData import *
 #test gita, bo nie wiem czy git, L.
 
 def logowanie():
@@ -31,17 +31,18 @@ def logowanie():
     def myClick():
         login2 = polelogin.get()
         haslo2 = polehaslo.get()
-        if login2 == 'planista' and haslo2 == '123':
+        result = sql(login2, haslo2)
+        if result == 2:
             myLabel = Label(root, text='Zalogowano pomyślnie jako planista')
             myLabel.pack()
             root.destroy()
             planistam1()
-        elif login2 == 'kierownik' and haslo2 == '321':
+        if result == 4:
             myLabel = Label(root, text='Zalogowano pomyślnie jako kierownik')
             myLabel.pack()
             root.destroy()
             kierownikm1()
-        else:
+        if result == 1:
             myLabel = Label(root, text='Zly login lub haslo')
             myLabel.pack()
 

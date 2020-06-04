@@ -1,22 +1,26 @@
 import pymysql
 
-db = pymysql.connect(host='localhost',
-                     port=3306,
-                     user='root',
-                     password='root',
-                     database='io')
+def sql(login, haslo):
+    db = pymysql.connect(host='localhost',
+                         port=3306,
+                         user='root',
+                         password='root',
+                         database='io')
 
-cursor = db.cursor()
+    cursor = db.cursor()
 
-fetch_queries = 'Select * from standardy;'
+    fetch_queries = 'Select * from credentials WHERE login LIKE %s;'
 
-cursor.execute(fetch_queries)
-lines=cursor.fetchall()
-for lines in lines:
-    print(lines)
+    cursor.execute(fetch_queries, login)
+    lines=cursor.fetchall()
+    for lines in lines:
+        if lines[1] == login and lines[2] == haslo:
+            flaga = lines[3]
+            return flaga
+        else: return 1
 
 
 
 
-db.commit()
-db.close()
+    db.commit()
+    db.close()
