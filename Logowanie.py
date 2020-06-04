@@ -33,13 +33,9 @@ def logowanie():
         haslo2 = polehaslo.get()
         result = sql(login2, haslo2)
         if result == 2:
-            myLabel = Label(root, text='Zalogowano pomyślnie jako planista')
-            myLabel.pack()
             root.destroy()
             planistam1()
         if result == 4:
-            myLabel = Label(root, text='Zalogowano pomyślnie jako kierownik')
-            myLabel.pack()
             root.destroy()
             kierownikm1()
         else:
@@ -62,11 +58,13 @@ def logowanie():
 def kierownikm1():
     root = Tk()
     root.title('Menu 1 - Kierownik')
+    root.geometry("800x600")
 
 
 def planistam1():
     root = Tk()
     root.title('Menu 1 - Planista')
+    root.geometry("800x600")
 
     def myClick3():
         root.destroy()
@@ -79,6 +77,7 @@ def planistam1():
 def planistam2():
     root = Tk()
     root.title('Menu planowania srednio terminowego - Planista')
+    root.geometry("800x600")
 
     def myClick4():
         root.destroy()
@@ -91,6 +90,7 @@ def planistam2():
 def planistam3():
     root = Tk()
     root.title('Capacity loading')
+    root.geometry("800x600")
 
 
 
