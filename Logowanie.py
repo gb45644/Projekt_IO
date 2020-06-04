@@ -42,7 +42,7 @@ def logowanie():
             myLabel.pack()
             root.destroy()
             kierownikm1()
-        if result == 1:
+        else:
             myLabel = Label(root, text='Zly login lub haslo')
             myLabel.pack()
 

@@ -17,7 +17,7 @@ def sql(login, haslo):
         if lines[1] == login and lines[2] == haslo:
             flaga = lines[3]
             return flaga
-        else: return 1
+
 
 
 
