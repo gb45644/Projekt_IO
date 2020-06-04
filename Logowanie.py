@@ -1,5 +1,6 @@
 from tkinter import *
 
+#test gita, bo nie wiem czy git, L.
 
 def logowanie():
     root = Tk()
