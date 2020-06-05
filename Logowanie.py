@@ -1,5 +1,6 @@
 from tkinter import *
 from LoadData import *
+
 #test gita, bo nie wiem czy git, L.
 
 def logowanie():
@@ -61,6 +62,7 @@ def logowanie():
 
 def kierownikm1():
     root = Tk()
+
     root.title('Menu 1 - Kierownik')
 
 
