@@ -34,13 +34,9 @@ def logowanie():
         haslo2 = polehaslo.get()
         result = sql(login2, haslo2)
         if result == 2:
-            myLabel = Label(root, text='Zalogowano pomyślnie jako planista')
-            myLabel.pack()
             root.destroy()
             planistam1()
         if result == 4:
-            myLabel = Label(root, text='Zalogowano pomyślnie jako kierownik')
-            myLabel.pack()
             root.destroy()
             kierownikm1()
         else:
