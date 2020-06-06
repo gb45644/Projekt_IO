@@ -8,9 +8,7 @@ import os
 
 def insertsqldb():
     #database connection
-    db = pymysql.connect(host="localhost",
-      user="root",
-      passwd="root",database="test")
+    db = pymysql.connect('localhost', 'root', 'root', 'test')
     #Make sure to initiate the cursor to fetch rows
     cursor = db.cursor()
     #Create a Table
@@ -44,10 +42,7 @@ def insertsqldb():
 
 def loadwos():
     #database connection
-    db = pymysql.connect(host="localhost",
-      user="root",
-      passwd="root",
-      database="test")
+    db = pymysql.connect('localhost', 'root', 'root', 'test')
     #Make sure to initiate the cursor to fetch rows
     cursor = db.cursor()
     # fetch all the queries in students_info Table
@@ -67,10 +62,7 @@ def loadwos():
 
 def loadcalendar():
     #database connection
-    db = pymysql.connect(host="localhost",
-      user="root",
-      passwd="root",
-      database="io")
+    db = pymysql.connect('localhost', 'root', 'root', 'io')
     #Make sure to initiate the cursor to fetch rows
     cursor = db.cursor()
     # fetch all the queries in students_info Table
@@ -87,20 +79,27 @@ def loadcalendar():
        check.append(line)
     #commit the connection
     check = pd.DataFrame(check)
-    check['Data'] = check[2].astype(str) + '-'+ check[3].astype(str) + '-' + check[4].astype(str)
+    check['Data'] = check[2].astype(str) + '-' + check[3].astype(str) + '-' + check[4].astype(str)
     check.columns = ['Imie', 'Nazwisko', 'rok', 'miesiac', 'dzien', 'Praca', 'Data']
     check = check.drop(['rok', 'miesiac', 'dzien'], axis=1)
     check = check.reindex(columns=['Imie', 'Nazwisko', 'Data', 'Praca'])
     check['Praca'] = check['Praca'].replace({0:'Wolne', 1: 'Praca'})
+    check['Nazwa'] = check["Imie"] + ' ' + check["Nazwisko"]
+    check.columns = ['Imie', 'Nazwisko', 'Praca', 'Data', 'Imie i Nazwisko']
+    check = check.drop(['Imie','Nazwisko'], axis=1)
+    check = check[['Imie i Nazwisko','Data', 'Praca']]
     db.commit()
     # make a habit to close the database connection once you create it
     db.close()
     return check
 
 
+
+
 class TestApp(Frame):
     """Basic test frame for the table"""
     def __init__(self, parent=None):
+        droplist()
         self.parent = parent
         Frame.__init__(self)
         self.main = self.master
@@ -114,16 +113,31 @@ class TestApp(Frame):
         myButton30 = Button(self.main, text='Zapisz')
         myButton30.pack()
 
-        # options = []
-        # clicked = StringVar()
-        # myLabel = Label(self.main, text=clicked.get()).pack()
-        # drop = OptionMenu(self.main, clicked, *options)
-        # drop.pack()
+
 
         pt.show()
         return
+def droplist():
+    df1 = loadcalendar()
+    df1 = df1.drop(['Data','Praca'],axis=1)
+    df1 = df1.drop_duplicates()
+    main = Tk()
+    main.geometry("600x400")
+
+    options = df1['Imie i Nazwisko']
+    clicked = StringVar(main)
+    myLabel = Label(main, text=clicked.get()).pack()
+    drop = OptionMenu(main, clicked, *options)
+    drop.pack()
+
+    def change_dropdown(*args):
+        print(clicked.get())
+
+    clicked.trace('w', change_dropdown)
+
 
 app = TestApp()
+
 #launch the app
 app.mainloop()
 
