@@ -63,6 +63,14 @@ def kierownikm1():
     root.geometry("800x600")
 
 
+    options = [1,2,3,4]
+    clicked = StringVar()
+    clicked.set(options[0])
+    myLabel = Label(root, text=clicked.get()).pack()
+    drop = OptionMenu(root, clicked, *options)
+    drop.pack()
+
+
 def planistam1():
     root = Tk()
     root.title('Menu 1 - Planista')

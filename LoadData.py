@@ -33,4 +33,13 @@ def grafik():
     db.commit()
     db.close()
 
+def sql():
+    db = pymysql.connect(host='localhost',
+                         port=3306,
+                         user='root',
+                         password='root',
+                         database='io')
+    cursor = db.cursor()
+    fetch_queries = 'Select * from credentials WHERE login LIKE %s;'
+
 grafik()
