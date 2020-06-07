@@ -155,9 +155,24 @@ def garphicdisp():
     root.title('Grafik pracy')
     f = Frame(root)
     frame.pack(fill=BOTH,expand=1)
+
+    df1 = loadcalendar()
+    df1 = df1.drop(['Data', 'Praca'], axis=1)
+    df1 = df1.drop_duplicates()
+
+    def callback(selected):
+        print(selected)
+
+    options = StringVar()
+    menu = OptionMenu(root, options, 'Bartosz Galka', 'Lukasz Turowski', command=callback)
+    menu.pack()
+    options.set('Bartosz Galka')
+
+    df = loadcalendar()
+
     pt = Table(frame)
     pt.show()
-    pt.model.df = loadcalendar()
+    pt.model.df = df[df['Imie i Nazwisko'] == callback]
 
 
     root.mainloop()
