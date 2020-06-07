@@ -103,12 +103,11 @@ class TestApp(Frame):
         self.parent = parent
         Frame.__init__(self)
         self.main = self.master
-        self.main.geometry('800x600+200+100')
-        self.main.title('Grafik pracy')
+
         f = Frame(self.main)
         f.pack(fill=BOTH,expand=1)
         df = loadcalendar()
-        self.table = pt = Table(f, dataframe=df,
+        self.table = pt = Table(f, dataframe=df[df['Imie i Nazwisko'] == selected],
                                 showtoolbar=FALSE, showstatusbar=True)
         myButton30 = Button(self.main, text='Zapisz')
         myButton30.pack()
@@ -124,21 +123,44 @@ def droplist():
     main = Tk()
     main.geometry("600x400")
 
-    options = df1['Imie i Nazwisko']
-    clicked = StringVar(main)
-    myLabel = Label(main, text=clicked.get()).pack()
-    drop = OptionMenu(main, clicked, *options)
-    drop.pack()
+    # options = df1['Imie i Nazwisko']
+    # clicked = StringVar(main)
+    # myLabel = Label(main, text=clicked.get()).pack()
+    # drop = OptionMenu(main, clicked, *options)
+    # drop.pack()
+    #
+    # def change_dropdown(*args):
+    #     print(clicked.get())
+    #
+    # clicked.trace('w', change_dropdown)
+    def callback(selected):
+        print(selected)
 
-    def change_dropdown(*args):
-        print(clicked.get())
+    options = StringVar()
+    menu = OptionMenu(main, options, 'Bartosz Galka', 'Lukasz Turowski', command=callback)
+    menu.pack()
+    options.set('Bartosz Galka')
 
-    clicked.trace('w', change_dropdown)
+# app = TestApp()
+#
+# #launch the app
+# app.mainloop()
+
+def garphicdisp():
+    root = Tk()
 
 
-app = TestApp()
+    frame = Frame(root)
+    root.geometry('800x600+200+100')
+    root.title('Grafik pracy')
+    f = Frame(root)
+    frame.pack(fill=BOTH,expand=1)
+    pt = Table(frame)
+    pt.show()
+    pt.model.df = loadcalendar()
 
-#launch the app
-app.mainloop()
+
+    root.mainloop()
 
 
+garphicdisp()
