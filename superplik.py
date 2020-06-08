@@ -57,6 +57,8 @@ def grapg_changew():
 
 
     values = loadcalendar()
+    mapcal = values.drop(['Imie i Nazwisko', 'Praca', 'id emploee'], axis=1).drop_duplicates()
+    mapemp = values.drop(['Data', 'Praca', 'id calendar'], axis=1).drop_duplicates()
 
     values = list(df['Imie i Nazwisko'].unique())
     drop1 = StringVar()
@@ -76,20 +78,33 @@ def grapg_changew():
     options3 = OptionMenu(root, drop3, *values3)
     options3.pack()
 
+
+
+
+
+
+    def rlscalnd():
+
+        set_val = drop3.get()
+        calend_fk = drop2.get()
+        empl_fk = drop1.get()
+        mapempp = mapemp[mapemp['Imie i Nazwisko'] == empl_fk]
+        empl = mapempp.iloc[:, [1]]
+        empl_fk = empl.to_numpy()
+        print(empl_fk)
+
+        if set_val == "Wolne":
+            set_val = 0
+        else:
+            set_val = 1
+        # print(set_val)
+        releasecalendar(set_val, calend_fk, empl_fk)
     load_button = Button(root, text='Zaladuj', command=rlscalnd)
     load_button.pack()
 
 
-def rlscalnd():
 
-    set_val = drop3.get()
-    # calend_fk = drop2.get()
-    # empl_fk = drop1.get()
-    print(set_val)
-    if empl_fk == "Wolne":
-        empl_fk = 0
-    else: empl_fk = 1
-    releasecalendar(set_val, calend_fk, empl_fk)
+
 
 
 
@@ -99,7 +114,6 @@ def releasecalendar(var1, var2, var3):
     fetch_queries = "UPDATE graphic SET work= %s WHERE calendar_fk = %s AND emploee_list_fk=%s;"
     var = var1,var2,var3
     cursor.execute(fetch_queries, var)
-    print(var1)
     db.commit()
     db.close()
 
