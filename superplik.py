@@ -39,9 +39,16 @@ def on_click():
     showdata()
     next_button.grid(row=1, column=0)
 
+
+
+
 # --- main ---
 
 frame_data = None
+
+def graphiconn_button():
+    root.destroy()
+    grapg_changew()
 
 def grapg_changew():
     root = Tk()
@@ -50,17 +57,23 @@ def grapg_changew():
 
     values = loadcalendar()
 
-    values = list(df['Data'].unique())
+    values = list(df['Imie i Nazwisko'].unique())
     selected = StringVar()
 
     options = OptionMenu(root, selected, *values)
     options.pack()
 
-    # values2 = list(df['Praca'].unique())
-    # selected2 = StringVar()
-    #
-    # options2 = OptionMenu(root, selected2, *values2)
-    # options2.pack()
+    values2 = list(df['Data'].unique())
+    selected2 = StringVar()
+
+    options2 = OptionMenu(root, selected2, *values2)
+    options2.pack()
+
+    values3 = list(df['Praca'].unique())
+    selected3 = StringVar()
+
+    options3 = OptionMenu(root, selected3, *values3)
+    options3.pack()
 
 
 
@@ -109,8 +122,8 @@ disp_button.pack()
 frame_data = Frame(root)
 frame_data.pack()
 
-change_button = Button(root, text="Zmiana grafiku", command=grapg_changew)
-change_button.pack()
+changegra_button = Button(root, text="Zmiana grafiku", command=graphiconn_button)
+changegra_button.pack()
 
 exit_button = Button(root, text="Wyjscie", command=root.destroy) #trzepa podpiac powrót do poprzedniego menu
 exit_button.pack()
