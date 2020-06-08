@@ -2,9 +2,9 @@ from tkinter import *
 import pandas as pd
 import pymysql
 
-
 # --- functions ---
 def grafik():
+
     def showdata():
         frame_data = Frame(root)
         frame_data.pack()
@@ -91,6 +91,11 @@ def grafik():
 
         load_button = Button(root, text='Zaladuj', command=rlscalnd)
         load_button.pack()
+        def back():
+            root.destroy()
+            grafik()
+        back_button = Button(root, text='Wstecz', command=back)
+        back_button.pack()
 
     def releasecalendar(var1, var2, var3):
         db = pymysql.connect('localhost', 'root', 'root', 'io')

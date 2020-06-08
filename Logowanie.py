@@ -1,6 +1,6 @@
-from tkinter import *
 from LoadData import *
-from superplik import *
+
+
 
 def logowanie():
     root = Tk()
@@ -46,6 +46,7 @@ def logowanie():
         root.destroy()
 
 
+
     myButton = Button(root, text='Zaloguj się', command=myClick)
     myButton.pack()
 
@@ -55,8 +56,12 @@ def logowanie():
     root.mainloop()
 
 
+
+
 def kierownikm1():
     grafik()
+
+
 
 
 
