@@ -26,11 +26,11 @@ def grafik():
         frame_data.pack()
 
         # destroy old frame with table
-        def destroy():
+        def reset():
             root.destroy()
             grafik()
 
-        des_butt = Button(root, text='Zresetuj', command=destroy)
+        des_butt = Button(root, text='Zresetuj', command=reset)
         des_butt.pack()
 
         table = Frame(frame_data)
