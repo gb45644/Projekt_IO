@@ -1,7 +1,6 @@
 from tkinter import *
 from LoadData import *
-
-#test gita, bo nie wiem czy git, L.
+from superplik import *
 
 def logowanie():
     root = Tk()
@@ -57,18 +56,10 @@ def logowanie():
 
 
 def kierownikm1():
-    root = Tk()
-
-    root.title('Menu 1 - Kierownik')
-    root.geometry("800x600")
+    grafik()
 
 
-    options = [1,2,3,4]
-    clicked = StringVar()
-    clicked.set(options[0])
-    myLabel = Label(root, text=clicked.get()).pack()
-    drop = OptionMenu(root, clicked, *options)
-    drop.pack()
+
 
 
 def planistam1():
@@ -101,7 +92,6 @@ def planistam3():
     root = Tk()
     root.title('Capacity loading')
     root.geometry("800x600")
-
 
 
 logowanie()

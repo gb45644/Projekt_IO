@@ -16,21 +16,20 @@ def sql(login, haslo):
             return flaga
 
 
-def grafik():
-    db = pymysql.connect('localhost', 'root', 'root', 'io')
-    cursor = db.cursor()
+# def grafik():
+#     db = pymysql.connect('localhost', 'root', 'root', 'io')
+#     cursor = db.cursor()
+#
+#     fetch_queries = 'Select  emploee_list.Name, calendar.Datagr, ' \
+#                     'calendar.work From emploee_list Join graphic ON emploee_list.id = ' \
+#                     'graphic.emploee_list_fk Join calendar ON calendar.id = graphic.calendar_fk  '
+#
+#     cursor.execute(fetch_queries)
+#     lines = cursor.fetchall()
+#     for lines in lines:
+#         print(lines)
+#
+#
+#     db.commit()
+#     db.close()
 
-    fetch_queries = 'Select  emploee_list.Name, calendar.Datagr, ' \
-                    'calendar.work From emploee_list Join graphic ON emploee_list.id = ' \
-                    'graphic.emploee_list_fk Join calendar ON calendar.id = graphic.calendar_fk  '
-
-    cursor.execute(fetch_queries)
-    lines = cursor.fetchall()
-    for lines in lines:
-        print(lines)
-
-
-    db.commit()
-    db.close()
-
-grafik()
