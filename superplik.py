@@ -18,7 +18,7 @@ def showdata():
     # fill frame with table
     row, column = df2.shape
     for r in range(row):
-        for c in range(column):
+        for c in range(3):
             e1 = Entry(table)
             e1.insert(1, df2.iloc[r, c])
             e1.grid(row=r, column=c, padx=2, pady=2)
@@ -39,28 +39,69 @@ def on_click():
     showdata()
     next_button.grid(row=1, column=0)
 
+
+
+
 # --- main ---
 
 frame_data = None
+
+def graphiconn_button():
+    root.destroy()
+    grapg_changew()
 
 def grapg_changew():
     root = Tk()
     root.title('Grafik pracy')
     root.geometry("800x600")
 
+
     values = loadcalendar()
 
-    values = list(df['Data'].unique())
-    selected = StringVar()
+    values = list(df['Imie i Nazwisko'].unique())
+    drop1 = StringVar()
 
-    options = OptionMenu(root, selected, *values)
+    options = OptionMenu(root, drop1, *values)
     options.pack()
 
-    # values2 = list(df['Praca'].unique())
-    # selected2 = StringVar()
-    #
-    # options2 = OptionMenu(root, selected2, *values2)
-    # options2.pack()
+    values2 = list(df['Data'].unique())
+    drop2 = StringVar()
+
+    options2 = OptionMenu(root, drop2, *values2)
+    options2.pack()
+
+    values3 = list(df['Praca'].unique())
+    drop3 = StringVar()
+
+    options3 = OptionMenu(root, drop3, *values3)
+    options3.pack()
+
+    load_button = Button(root, text='Zaladuj', command=rlscalnd)
+    load_button.pack()
+
+
+def rlscalnd():
+
+    set_val = drop3.get()
+    # calend_fk = drop2.get()
+    # empl_fk = drop1.get()
+    print(set_val)
+    if empl_fk == "Wolne":
+        empl_fk = 0
+    else: empl_fk = 1
+    releasecalendar(set_val, calend_fk, empl_fk)
+
+
+
+def releasecalendar(var1, var2, var3):
+    db = pymysql.connect('localhost', 'root', 'root', 'io')
+    cursor = db.cursor()
+    fetch_queries = "UPDATE graphic SET work= %s WHERE calendar_fk = %s AND emploee_list_fk=%s;"
+    var = var1,var2,var3
+    cursor.execute(fetch_queries, var)
+    print(var1)
+    db.commit()
+    db.close()
 
 
 
@@ -72,7 +113,7 @@ def loadcalendar():
     cursor = db.cursor()
     # fetch all the queries in students_info Table
     fetch_queries ='Select emploee_list.Name, calendar.Datagr, ' \
-                    'graphic.work From emploee_list Join graphic ON emploee_list.id = ' \
+                    'graphic.work, graphic.calendar_fk, graphic.emploee_list_fk From emploee_list Join graphic ON emploee_list.id = ' \
                     'graphic.emploee_list_fk Join calendar ON calendar.id = graphic.calendar_fk '
 
 
@@ -84,9 +125,10 @@ def loadcalendar():
        check.append(line)
     #commit the connection
     check = pd.DataFrame(check)
-    check.columns = ['Imie i Nazwisko', 'Data', 'Praca']
+    check.columns = ['Imie i Nazwisko', 'Data', 'Praca', 'id calendar', 'id emploee']
     check['Praca'] = check['Praca'].replace({0:'Wolne', 1: 'Praca'})
     db.commit()
+
     # make a habit to close the database connection once you create it
     db.close()
     return check
@@ -109,8 +151,8 @@ disp_button.pack()
 frame_data = Frame(root)
 frame_data.pack()
 
-change_button = Button(root, text="Zmiana grafiku", command=grapg_changew)
-change_button.pack()
+changegra_button = Button(root, text="Zmiana grafiku", command=graphiconn_button)
+changegra_button.pack()
 
 exit_button = Button(root, text="Wyjscie", command=root.destroy) #trzepa podpiac powrót do poprzedniego menu
 exit_button.pack()

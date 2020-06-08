@@ -67,7 +67,7 @@ def loadcalendar():
     cursor = db.cursor()
     # fetch all the queries in students_info Table
     fetch_queries ='Select emploee_list.Name, calendar.Datagr, ' \
-                    'calendar.work From emploee_list Join graphic ON emploee_list.id = ' \
+                    'graphic.work, graphic.calendar_fk, graphic.emploee_list_fk From emploee_list Join graphic ON emploee_list.id = ' \
                     'graphic.emploee_list_fk Join calendar ON calendar.id = graphic.calendar_fk '
 
 
@@ -79,12 +79,33 @@ def loadcalendar():
        check.append(line)
     #commit the connection
     check = pd.DataFrame(check)
-    check.columns = ['Imie i Nazwisko', 'Data', 'Praca']
+    check.columns = ['Imie i Nazwisko', 'Data', 'Praca', 'id calendar', 'id emploee']
     check['Praca'] = check['Praca'].replace({0:'Wolne', 1: 'Praca'})
     db.commit()
     # make a habit to close the database connection once you create it
     db.close()
+    print(check)
     return check
+
+
+
+
+def releasecalendar():
+    var1 = 0
+    var2 = 1
+    var3 = 1
+    db = pymysql.connect('localhost', 'root', 'root', 'io')
+    cursor = db.cursor()
+    fetch_queries = "UPDATE graphic SET work= %s WHERE calendar_fk = %s AND emploee_list_fk=%s;"
+
+    cursor.execute(fetch_queries, (var1 ,var2 , var3))
+
+    db.commit()
+    db.close()
+
+
+releasecalendar()
+
 
 
 
@@ -191,6 +212,3 @@ def garphicdisp():
 
 
     root.mainloop()
-
-
-garphicdisp()
