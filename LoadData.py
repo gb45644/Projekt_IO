@@ -20,9 +20,9 @@ def grafik():
     db = pymysql.connect('localhost', 'root', 'root', 'io')
     cursor = db.cursor()
 
-    fetch_queries = 'Select emploee_list.id,  emploee_list.imie,  emploee_list.nazwisko, calendar.id, calendar.year, ' \
-                    'calendar.month, calendar.day, calendar.work From emploee_list Join graphic ON emploee_list.id = ' \
-                    'graphic.emploee_fk Join calendar ON calendar.id = graphic.calendar_fk  '
+    fetch_queries = 'Select  emploee_list.Name, calendar.Datagr, ' \
+                    'calendar.work From emploee_list Join graphic ON emploee_list.id = ' \
+                    'graphic.emploee_list_fk Join calendar ON calendar.id = graphic.calendar_fk  '
 
     cursor.execute(fetch_queries)
     lines = cursor.fetchall()
