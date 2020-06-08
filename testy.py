@@ -66,9 +66,9 @@ def loadcalendar():
     #Make sure to initiate the cursor to fetch rows
     cursor = db.cursor()
     # fetch all the queries in students_info Table
-    fetch_queries =     fetch_queries = 'Select emploee_list.imie,  emploee_list.nazwisko, calendar.year, ' \
-                    'calendar.month, calendar.day, calendar.work From emploee_list Join graphic ON emploee_list.id = ' \
-                    'graphic.emploee_fk Join calendar ON calendar.id = graphic.calendar_fk'
+    fetch_queries ='Select emploee_list.Name, calendar.Datagr, ' \
+                    'calendar.work From emploee_list Join graphic ON emploee_list.id = ' \
+                    'graphic.emploee_list_fk Join calendar ON calendar.id = graphic.calendar_fk '
 
 
     #queries execution
@@ -79,15 +79,8 @@ def loadcalendar():
        check.append(line)
     #commit the connection
     check = pd.DataFrame(check)
-    check['Data'] = check[2].astype(str) + '-' + check[3].astype(str) + '-' + check[4].astype(str)
-    check.columns = ['Imie', 'Nazwisko', 'rok', 'miesiac', 'dzien', 'Praca', 'Data']
-    check = check.drop(['rok', 'miesiac', 'dzien'], axis=1)
-    check = check.reindex(columns=['Imie', 'Nazwisko', 'Data', 'Praca'])
+    check.columns = ['Imie i Nazwisko', 'Data', 'Praca']
     check['Praca'] = check['Praca'].replace({0:'Wolne', 1: 'Praca'})
-    check['Nazwa'] = check["Imie"] + ' ' + check["Nazwisko"]
-    check.columns = ['Imie', 'Nazwisko', 'Praca', 'Data', 'Imie i Nazwisko']
-    check = check.drop(['Imie','Nazwisko'], axis=1)
-    check = check[['Imie i Nazwisko','Data', 'Praca']]
     db.commit()
     # make a habit to close the database connection once you create it
     db.close()
@@ -108,7 +101,7 @@ class TestApp(Frame):
         f.pack(fill=BOTH,expand=1)
         df = loadcalendar()
         self.table = pt = Table(f, dataframe=df[df['Imie i Nazwisko'] == selected],
-                                showtoolbar=FALSE, showstatusbar=True)
+                                showtoolbar=True, showstatusbar=True)
         myButton30 = Button(self.main, text='Zapisz')
         myButton30.pack()
 
@@ -120,6 +113,7 @@ def droplist():
     df1 = loadcalendar()
     df1 = df1.drop(['Data','Praca'],axis=1)
     df1 = df1.drop_duplicates()
+
     main = Tk()
     main.geometry("600x400")
 
@@ -147,32 +141,53 @@ def droplist():
 # app.mainloop()
 
 def garphicdisp():
+    global df
+    def callback(selected):
+        print(selected)
+
+
     root = Tk()
-
-
     frame = Frame(root)
     root.geometry('800x600+200+100')
     root.title('Grafik pracy')
     f = Frame(root)
     frame.pack(fill=BOTH,expand=1)
-
-    df1 = loadcalendar()
+    df = loadcalendar()
+    df1 = df
     df1 = df1.drop(['Data', 'Praca'], axis=1)
     df1 = df1.drop_duplicates()
 
-    def callback(selected):
-        print(selected)
+
+
+
+    def filter():
+        root.destroy()
+        garphicdisp()
+
+    filtrbutt = Button(root, text='Szukaj', command=filter)
+    filtrbutt.pack()
+
 
     options = StringVar()
     menu = OptionMenu(root, options, 'Bartosz Galka', 'Lukasz Turowski', command=callback)
     menu.pack()
-    options.set('Bartosz Galka')
+    flag = 0
+    def ok(flag):
+        print("value is", options.get())
+        root.destroy()
+        flag = 1
+        garphicdisp()
+        return options.get(), flag
 
-    df = loadcalendar()
 
-    pt = Table(frame)
+
+    options.set('')
+    pt = Table(frame, dataframe=df)
     pt.show()
-    pt.model.df = df[df['Imie i Nazwisko'] == callback]
+    button = Button(root, text="OK", command=ok(flag))
+    button.pack()
+    if flag == 1:
+        df = df[df['Imie i Nazwisko'] == options.get()]
 
 
     root.mainloop()
