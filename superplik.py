@@ -2,6 +2,7 @@ from tkinter import *
 import pandas as pd
 import pymysql
 
+
 # --- functions ---
 def grafik():
     def showdata():
@@ -12,7 +13,6 @@ def grafik():
         def destroy():
             root.destroy()
             grafik()
-
 
         des_butt = Button(root, text='Zresetuj', command=destroy)
         des_butt.pack()
@@ -36,16 +36,12 @@ def grafik():
 
         if val == 'Wszystkie':
             df2 = df
-            #next_button.grid_forget()
+            # next_button.grid_forget()
         else:
-            df2 = df[ df['Imie i Nazwisko'] == val ]
-            #next_button.grid(row=1, column=0)
+            df2 = df[df['Imie i Nazwisko'] == val]
+            # next_button.grid(row=1, column=0)
 
         showdata()
-
-
-
-
 
     # --- main ---
 
@@ -59,7 +55,6 @@ def grafik():
         root = Tk()
         root.title('Grafik pracy')
         root.geometry("800x600")
-
 
         values = loadcalendar()
 
@@ -81,11 +76,6 @@ def grafik():
         options3 = OptionMenu(root, drop3, *values3)
         options3.pack()
 
-
-
-
-
-
         def rlscalnd():
 
             set_val = drop3.get()
@@ -98,49 +88,40 @@ def grafik():
                 set_val = 1
 
             releasecalendar(set_val, calend_fk, empl_fk)
+
         load_button = Button(root, text='Zaladuj', command=rlscalnd)
         load_button.pack()
-
-
-
-
-
-
 
     def releasecalendar(var1, var2, var3):
         db = pymysql.connect('localhost', 'root', 'root', 'io')
         cursor = db.cursor()
         fetch_queries = "UPDATE graphic JOIN emploee_list ON emploee_list.id = graphic.emploee_list_fk JOIN calendar ON " \
                         "calendar.id = graphic.calendar_fk SET work= %s WHERE Datagr = %s AND Name =%s; "
-        var = var1,var2,var3
+        var = var1, var2, var3
         cursor.execute(fetch_queries, var)
         db.commit()
         db.close()
 
-
-
-
     def loadcalendar():
-        #database connection
+        # database connection
         db = pymysql.connect('localhost', 'root', 'root', 'io')
-        #Make sure to initiate the cursor to fetch rows
+        # Make sure to initiate the cursor to fetch rows
         cursor = db.cursor()
         # fetch all the queries in students_info Table
-        fetch_queries ='Select emploee_list.Name, calendar.Datagr, ' \
+        fetch_queries = 'Select emploee_list.Name, calendar.Datagr, ' \
                         'graphic.work, graphic.calendar_fk, graphic.emploee_list_fk From emploee_list Join graphic ON emploee_list.id = ' \
                         'graphic.emploee_list_fk Join calendar ON calendar.id = graphic.calendar_fk '
 
-
-        #queries execution
+        # queries execution
         cursor.execute(fetch_queries)
         lines = cursor.fetchall()
         check = []
         for line in lines:
-           check.append(line)
-        #commit the connection
+            check.append(line)
+        # commit the connection
         check = pd.DataFrame(check)
         check.columns = ['Imie i Nazwisko', 'Data', 'Praca', 'id calendar', 'id emploee']
-        check['Praca'] = check['Praca'].replace({0:'Wolne', 1: 'Praca'})
+        check['Praca'] = check['Praca'].replace({0: 'Wolne', 1: 'Praca'})
         db.commit()
 
         # make a habit to close the database connection once you create it
@@ -168,14 +149,11 @@ def grafik():
     changegra_button = Button(root, text="Zmiana grafiku", command=graphiconn_button)
     changegra_button.pack()
 
-    exit_button = Button(root, text="Wyjscie", command=root.destroy) #trzepa podpiac powrót do poprzedniego menu
+    exit_button = Button(root, text="Wyjscie", command=root.destroy)  # trzepa podpiac powrót do poprzedniego menu
     exit_button.pack()
 
     # table with data - inside "frame_data" - without showing it
     table = Frame(frame_data)
-    #table.grid(row=0, column=0)
-
-
-
+    # table.grid(row=0, column=0)
 
     root.mainloop()
