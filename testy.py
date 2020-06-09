@@ -8,6 +8,7 @@ import sys
 import os
 import datetime
 
+
 # def insertsqldb():
 #     #database connection
 #     db = pymysql.connect('localhost', 'root', 'root', 'test')
@@ -261,10 +262,28 @@ def capacity_loading():
     calendar = pd.DataFrame(loadcapcal())
     wolist = pd.DataFrame(loadWO())
 
-    caparepo = []
-    header = list(calendar[1])
-    isowekk = calendar.assign(wkiso = calendar[1].dt.week)
-    print(isowekk)
+    #calendar['1'].dt.week
+
+    calendar.columns = ['byle jak','Data']
+    # print(calendar.dtypes)
+    # calendar[['rok','miesiac','dzien']]=calendar.Data.str.split("-",expand=True)
+    # print(calendar)
+    #print(calendar.Data.apply(lambda x: pd.Series(str(x).split("-"))))
+    calendar['Data']= pd.to_datetime(calendar['Data'])
+
+    # calendar.dropna(inplace=True)
+    # cal = calendar["Data"].split("-", n=2, expand=True)
+    # calendar["Rok"]=cal[1]
+    # calendar["Miesiac"]=cal[2]
+    # calendar["Dzien"]=cal[3]
+    # calendar.drop(columns=["Data"],inplace=True)
+    # print(calendar)
+
+    calendar['Nr tygodnia'] = calendar['Data'].dt.week
+    print(calendar)
+
+    #isowekk = calendar.assign(wkiso = calendar[1].dt.week)
+    #print(calendar)
 
 
 
