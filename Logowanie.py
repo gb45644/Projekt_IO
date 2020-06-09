@@ -3,6 +3,8 @@ from tkinter import *
 import pandas as pd
 import pymysql
 from pandastable import Table
+import numpy as np
+from tkinter import messagebox
 
 def sql(login, haslo):
     db = pymysql.connect('localhost', 'root', 'root', 'io')
@@ -69,6 +71,100 @@ def logowanie():
     myButton2 = Button(root, text='Wyjdź', command=myClick2)
     myButton2.pack()
 
+    root.mainloop()
+def nowy():
+    root = Tk()
+    root.geometry("800x600")
+    db = pymysql.connect('localhost', 'root', 'root', 'io')
+    imie = Label(root, text='Imie:', font=('Arial',10))
+    imie.configure(background='white')
+    imie.pack()
+
+
+    poleimie = Entry(root, width=20)
+    poleimie.pack()
+
+    nazwisko = Label(root, text='Nazwisko:', font=('Arial',10))
+    nazwisko.configure(background='white')
+    nazwisko.pack()
+
+    polenazwisko = Entry(root, width=20)
+    polenazwisko.pack()
+
+
+    def add():
+        name = poleimie.get()
+        sur = polenazwisko.get()
+        name_digit = False
+        sur_digit = False
+        for character in name:
+            if character.isdigit():
+                name_digit = True
+        for letter in sur:
+            if letter.isdigit():
+                sur_digit = True
+        def empty():
+            top = Tk()
+            top.eval('tk::PlaceWindow %s center' % top.winfo_toplevel())
+            top.withdraw()
+            messagebox.showwarning(title="Blad", message='Pole Imie i/lub Nazwisko jest PUSTE!')
+            top.deiconify()
+            top.destroy()
+        def nodigit():
+            top = Tk()
+            top.eval('tk::PlaceWindow %s center' % top.winfo_toplevel())
+            top.withdraw()
+            messagebox.showwarning(title="Blad", message='Imie i/lub Nazwisko zawiera LICZBE!')
+            top.deiconify()
+            top.destroy()
+        def succes():
+            top = Tk()
+            top.eval('tk::PlaceWindow %s center' % top.winfo_toplevel())
+            top.withdraw()
+            messagebox.showinfo(title="Zrobione", message='Dodano pracownika!!')
+            top.deiconify()
+            top.destroy()
+        if len(name) == 0 or len(sur) == 0:
+            empty()
+        elif name_digit == True or sur_digit == True:
+            nodigit()
+        else:
+            succes()
+
+            cursor = db.cursor()
+            id_em = 'SELECT COUNT(*) FROM emploee_list'
+            cursor.execute(id_em)
+            id_emp = cursor.fetchall()
+            last_id = id_emp[0][0]+1
+
+            id_cal = 'SELECT COUNT(*) FROM graphic'
+            cursor.execute(id_cal)
+            id_cale = cursor.fetchall()
+            last_cal = id_cale[0][0]+1
+            full = name + ' ' + sur
+
+            insert_name = 'INSERT INTO emploee_list (Name, id) VALUES (%s,%s);'
+
+            cursor.execute(insert_name, (full, last_id))
+
+            select_id = 'SELECT id FROM emploee_list WHERE Name LIKE %s;'
+            cursor.execute(select_id, full)
+            em_fk = cursor.fetchall()
+            emp_fk = em_fk[0][0]
+            num_cal = 'SELECT COUNT(*) FROM calendar;'
+            cursor.execute(num_cal)
+            cal_cnt = cursor.fetchall()
+            end = cal_cnt[0][0]
+            temp = np.arange(1, end + 1, 1)
+            for i in range(np.size(temp)):
+                cursor.execute("INSERT INTO graphic (id, calendar_fk, emploee_list_fk, work) VALUES (%s, %s, %s, 1);", (last_cal+i, i+1, emp_fk))
+                db.commit()
+
+
+
+
+    dodajcos = Button(root, text='Dodaj pracownika', command=add)
+    dodajcos.pack()
     root.mainloop()
 
 def grafik():
@@ -216,7 +312,11 @@ def grafik():
 
     changegra_button = Button(root, text="Zmiana grafiku", command=graphiconn_button)
     changegra_button.pack()
-
+    def add_work():
+        root.destroy()
+        nowy()
+    dodaj_n = Button(root,text='Dodaj pracownika', command=add_work)
+    dodaj_n.pack()
     def logout():
         root.destroy()
         logowanie()
