@@ -1,10 +1,11 @@
-#from LoadData import *
+# from LoadData import *
 from tkinter import *
 import pandas as pd
 import pymysql
 from pandastable import Table
 import numpy as np
 from tkinter import messagebox
+
 
 def sql(login, haslo):
     db = pymysql.connect('localhost', 'root', 'root', 'io')
@@ -20,26 +21,25 @@ def sql(login, haslo):
             flaga = lines[3]
             return flaga
 
+
 def logowanie():
     root = Tk()
     root.title('Logowanie')
     root.geometry("800x600")
     root.configure(background='white')
 
-    theLabel1 = Label(root, text='Ultimate planning tool', font=('Arial',24))
+    theLabel1 = Label(root, text='Ultimate planning tool', font=('Arial', 24))
     theLabel1.configure(background='white')
     theLabel1.pack()
 
-
-    theLabel2 = Label(root, text='Login:', font=('Arial',18))
+    theLabel2 = Label(root, text='Login:', font=('Arial', 18))
     theLabel2.configure(background='white')
     theLabel2.pack()
-
 
     polelogin = Entry(root, width=50)
     polelogin.pack()
 
-    theLabel3 = Label(root, text='Hasło:', font=('Arial',18))
+    theLabel3 = Label(root, text='Hasło:', font=('Arial', 18))
     theLabel3.configure(background='white')
     theLabel3.pack()
 
@@ -63,8 +63,6 @@ def logowanie():
     def myClick2():
         root.destroy()
 
-
-
     myButton = Button(root, text='Zaloguj się', command=myClick)
     myButton.pack()
 
@@ -72,25 +70,25 @@ def logowanie():
     myButton2.pack()
 
     root.mainloop()
+
+
 def nowy():
     root = Tk()
     root.geometry("800x600")
     db = pymysql.connect('localhost', 'root', 'root', 'io')
-    imie = Label(root, text='Imie:', font=('Arial',10))
+    imie = Label(root, text='Imie:', font=('Arial', 10))
     imie.configure(background='white')
     imie.pack()
-
 
     poleimie = Entry(root, width=20)
     poleimie.pack()
 
-    nazwisko = Label(root, text='Nazwisko:', font=('Arial',10))
+    nazwisko = Label(root, text='Nazwisko:', font=('Arial', 10))
     nazwisko.configure(background='white')
     nazwisko.pack()
 
     polenazwisko = Entry(root, width=20)
     polenazwisko.pack()
-
 
     def add():
         name = poleimie.get()
@@ -103,6 +101,7 @@ def nowy():
         for letter in sur:
             if letter.isdigit():
                 sur_digit = True
+
         def empty():
             top = Tk()
             top.eval('tk::PlaceWindow %s center' % top.winfo_toplevel())
@@ -110,6 +109,7 @@ def nowy():
             messagebox.showwarning(title="Blad", message='Pole Imie i/lub Nazwisko jest PUSTE!')
             top.deiconify()
             top.destroy()
+
         def nodigit():
             top = Tk()
             top.eval('tk::PlaceWindow %s center' % top.winfo_toplevel())
@@ -117,30 +117,32 @@ def nowy():
             messagebox.showwarning(title="Blad", message='Imie i/lub Nazwisko zawiera LICZBE!')
             top.deiconify()
             top.destroy()
-        def succes():
+
+        def success():
             top = Tk()
             top.eval('tk::PlaceWindow %s center' % top.winfo_toplevel())
             top.withdraw()
             messagebox.showinfo(title="Zrobione", message='Dodano pracownika!!')
             top.deiconify()
             top.destroy()
+
         if len(name) == 0 or len(sur) == 0:
             empty()
         elif name_digit == True or sur_digit == True:
             nodigit()
         else:
-            succes()
+            success()
 
             cursor = db.cursor()
             id_em = 'SELECT COUNT(*) FROM emploee_list'
             cursor.execute(id_em)
             id_emp = cursor.fetchall()
-            last_id = id_emp[0][0]+1
+            last_id = id_emp[0][0] + 1
 
             id_cal = 'SELECT COUNT(*) FROM graphic'
             cursor.execute(id_cal)
             id_cale = cursor.fetchall()
-            last_cal = id_cale[0][0]+1
+            last_cal = id_cale[0][0] + 1
             full = name + ' ' + sur
 
             insert_name = 'INSERT INTO emploee_list (Name, id) VALUES (%s,%s);'
@@ -157,34 +159,108 @@ def nowy():
             end = cal_cnt[0][0]
             temp = np.arange(1, end + 1, 1)
             for i in range(np.size(temp)):
-                cursor.execute("INSERT INTO graphic (id, calendar_fk, emploee_list_fk, work) VALUES (%s, %s, %s, 1);", (last_cal+i, i+1, emp_fk))
+                cursor.execute("INSERT INTO graphic (id, calendar_fk, emploee_list_fk, work) VALUES (%s, %s, %s, 1);",
+                               (last_cal + i, i + 1, emp_fk))
                 db.commit()
-
-
-
 
     dodajcos = Button(root, text='Dodaj pracownika', command=add)
     dodajcos.pack()
+
     def back():
         root.destroy()
         kierownikm1()
 
-    back = Button(root, text='Powrot', command=back)
+    back = Button(root, text='Wstecz', command=back)
     back.pack()
     root.mainloop()
 
-def grafik():
 
+def usun():
+    root = Tk()
+    root.geometry("800x600")
+    db = pymysql.connect('localhost', 'root', 'root', 'io')
+
+    cursor = db.cursor()
+    cursor.execute("SELECT Name FROM emploee_list")
+    lines = cursor.fetchall()
+    df = []
+    for line in lines:
+        df.append(line)
+    df = pd.DataFrame(df)
+    df.columns = ['Imie i Nazwisko']
+    select_d = df['Imie i Nazwisko'].unique()
+    sel2 = StringVar()
+    list = OptionMenu(root, sel2, *select_d)
+    list.pack()
+
+    def sure():
+        top = Tk()
+        top.eval('tk::PlaceWindow %s center' % top.winfo_toplevel())
+        top.withdraw()
+
+        response = messagebox.askyesno(title="Usun", message='Czy na pewno chcesz to zrobic?', )
+        if response == False:
+            print("nieee")
+            root.destroy()
+            usun()
+        top.deiconify()
+        top.destroy()
+
+    def remove(dele):
+        full = dele
+
+        def success():
+            top = Tk()
+            top.eval('tk::PlaceWindow %s center' % top.winfo_toplevel())
+            top.withdraw()
+            messagebox.showinfo(title="Zrobione", message='Usunieto pracownika!!')
+            top.deiconify()
+            top.destroy()
+            root.destroy()
+            usun()
+
+        select_id = 'SELECT id FROM emploee_list WHERE Name LIKE %s;'
+        cursor.execute(select_id, full)
+        em_fk = cursor.fetchall()
+        emp_fk = em_fk[0][0]
+        num_cal = 'SELECT COUNT(*) FROM calendar;'
+        cursor.execute(num_cal)
+        cal_cnt = cursor.fetchall()
+        end = cal_cnt[0][0]
+        temp = np.arange(1, end + 1, 1)
+        for i in range(np.size(temp)):
+            cursor.execute("DELETE FROM graphic WHERE calendar_fk = %s AND emploee_list_fk = %s;", (i + 1, emp_fk))
+
+        cursor.execute("DELETE FROM emploee_list WHERE Name = %s;", full)
+        db.commit()
+        success()
+
+    def delete():
+        sure()
+        dele = sel2.get()
+        remove(dele)
+
+    del_button = Button(root, text='Usun pracownika', command=delete)
+    del_button.pack()
+
+    def back():
+        root.destroy()
+        kierownikm1()
+
+    back = Button(root, text='Wstecz', command=back)
+    back.pack()
+    root.mainloop()
+
+
+def grafik():
     def showdata(df2):
         frame_data = Frame(root)
 
         frame_data.pack(fill=BOTH, expand=1)
 
-
-        df2 = df2.drop(['id calendar','id emploee'], axis=1)
+        df2 = df2.drop(['id calendar', 'id emploee'], axis=1)
         table = pt = Table(frame_data, dataframe=df2, showtoolbar=False, showstatusbar=True)
         pt.show()
-
 
         # destroy old frame with table
         def destroy():
@@ -258,9 +334,11 @@ def grafik():
 
         load_button = Button(root, text='Zaladuj', command=rlscalnd)
         load_button.pack()
+
         def back():
             root.destroy()
             grafik()
+
         back_button = Button(root, text='Wstecz', command=back)
         back_button.pack()
 
@@ -320,14 +398,25 @@ def grafik():
 
     changegra_button = Button(root, text="Zmiana grafiku", command=graphiconn_button)
     changegra_button.pack()
+
     def add_work():
         root.destroy()
         nowy()
-    dodaj_n = Button(root,text='Dodaj pracownika', command=add_work)
+
+    dodaj_n = Button(root, text='Dodaj pracownika', command=add_work)
     dodaj_n.pack()
+
+    def del_work():
+        root.destroy()
+        usun()
+
+    dodaj_n = Button(root, text='Usun pracownika', command=del_work)
+    dodaj_n.pack()
+
     def logout():
         root.destroy()
         logowanie()
+
     wyloguj = Button(root, text='Wyloguj', command=logout)
     wyloguj.pack()
 
@@ -342,8 +431,6 @@ def kierownikm1():
     grafik()
 
 
-
-
 def logout(root):
     root.destroy()
     logowanie()
@@ -353,7 +440,6 @@ def planistam1():
     root = Tk()
     root.title('Menu 1 - Planista')
     root.geometry("800x600")
-
 
     def myClick3():
         root.destroy()
@@ -365,6 +451,7 @@ def planistam1():
     def logout():
         root.destroy()
         logowanie()
+
     wyloguj = Button(root, text='Wyloguj', command=logout)
     wyloguj.pack()
 
@@ -373,6 +460,7 @@ def planistam2():
     root = Tk()
     root.title('Menu planowania srednio terminowego - Planista')
     root.geometry("800x600")
+
     def back():
         root.destroy()
         planistam1()
@@ -381,19 +469,23 @@ def planistam2():
         root.destroy()
         planistam3()
 
-
     myButton4 = Button(root, text='Capacity loading', command=myClick4)
     myButton4.pack()
-    back = Button(root,text="Powrot",command=back)
+    back = Button(root, text="Powrot", command=back)
     back.pack()
+
 
 def planistam3():
     root = Tk()
     root.title('Capacity loading')
     root.geometry("800x600")
+
     def back():
         root.destroy()
         planistam2()
-    back = Button(root,text="Powrot",command=back)
+
+    back = Button(root, text="Powrot", command=back)
     back.pack()
+
+
 logowanie()
