@@ -309,6 +309,8 @@ def grafik():
     disp_button.pack()
 
     # frame for table and button "Next Data"
+    frame_data = Frame(root)
+    frame_data.pack()
 
     changegra_button = Button(root, text="Zmiana grafiku", command=graphiconn_button)
     changegra_button.pack()

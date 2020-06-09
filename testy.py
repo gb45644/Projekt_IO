@@ -264,7 +264,6 @@ def capacity_loading():
     caparepo = []
     header = list(calendar[1])
     isowekk = calendar.assign(wkiso = calendar[1].dt.week)
-    #123+6454
     print(isowekk)
 
 
