@@ -5,7 +5,7 @@ import pymysql
 from pandastable import Table
 import numpy as np
 from tkinter import messagebox
-from tkinter import ttk
+
 
 
 def sql(login, haslo):
@@ -21,6 +21,7 @@ def sql(login, haslo):
         if lines[1] == login and lines[2] == haslo:
             flaga = lines[3]
             return flaga
+
 
 
 def logowanie():
@@ -54,7 +55,7 @@ def logowanie():
         if access == 2:
             root.destroy()
             planistam1()
-        if access == 4:
+        elif access == 4:
             root.destroy()
             kierownikm1()
         else:
@@ -491,10 +492,6 @@ def grafik():
 
     root = Tk()
     root.geometry('800x600')
-    style = ttk.Style()
-    style.theme_names()
-    print(style.theme_names())
-    style.theme_use('clam')
     root.title('Grafik pracy')
     values = ['Wszystkie'] + list(df['Imie i Nazwisko'].unique())
     selected = StringVar()
