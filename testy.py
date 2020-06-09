@@ -262,6 +262,8 @@ def capacity_loading():
     calendar = pd.DataFrame(loadcapcal())
     wolist = pd.DataFrame(loadWO())
     root = Tk()
+    root.title('Capacity loading')
+    root.geometry("800x600")
 
 
     #calendar['1'].dt.week
@@ -296,10 +298,15 @@ def capacity_loading():
     wolist['lin cap'] = wolist['predkosc'] * 24 * 5
     demandreport = pd.pivot_table(wolist, values=['ilosc', 'lin cap'], index=['num tyg'], columns=['linia'], aggfunc={'ilosc': np.sum, 'lin cap': np.mean}).transpose()
     print(demandreport)
+    frame_data = Frame(root)
 
+
+    pt = Table(frame_data, dataframe=demandreport, showtoolbar=True, showstatusbar=True)
+    pt.show()
+    frame_data.pack(fill=BOTH, expand=1)
     #both = pd.merge(spacereport, demandreport, 'left', on= 'linia')
 
-
+    root.mainloop()
 
     #isowekk = calendar.assign(wkiso = calendar[1].dt.week)
     #print(calendar)
