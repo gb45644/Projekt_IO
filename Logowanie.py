@@ -165,6 +165,12 @@ def nowy():
 
     dodajcos = Button(root, text='Dodaj pracownika', command=add)
     dodajcos.pack()
+    def back():
+        root.destroy()
+        kierownikm1()
+
+    back = Button(root, text='Powrot', command=back)
+    back.pack()
     root.mainloop()
 
 def grafik():
