@@ -2,6 +2,7 @@
 from tkinter import *
 import pandas as pd
 import pymysql
+from pandastable import Table
 
 def sql(login, haslo):
     db = pymysql.connect('localhost', 'root', 'root', 'io')
@@ -46,11 +47,11 @@ def logowanie():
     def myClick():
         login2 = polelogin.get()
         haslo2 = polehaslo.get()
-        result = sql(login2, haslo2)
-        if result == 2:
+        access = sql(login2, haslo2)
+        if access == 2:
             root.destroy()
             planistam1()
-        if result == 4:
+        if access == 4:
             root.destroy()
             kierownikm1()
         else:
@@ -72,29 +73,26 @@ def logowanie():
 
 def grafik():
 
-    def showdata():
+    def showdata(df2):
         frame_data = Frame(root)
-        frame_data.pack()
+
+        frame_data.pack(fill=BOTH, expand=1)
+
+
+        df2 = df2.drop(['id calendar','id emploee'], axis=1)
+        table = pt = Table(frame_data, dataframe=df2, showtoolbar=False, showstatusbar=True)
+        pt.show()
+
 
         # destroy old frame with table
-        def reset():
+        def destroy():
             root.destroy()
             grafik()
 
-        des_butt = Button(root, text='Zresetuj', command=reset)
+        des_butt = Button(root, text='Zresetuj', command=destroy)
         des_butt.pack()
 
-        table = Frame(frame_data)
-        table.grid(row=0, column=0)
-
-        # fill frame with table
-        row, column = df2.shape
-        for r in range(row):
-            for c in range(3):
-                e1 = Entry(table)
-                e1.insert(1, df2.iloc[r, c])
-                e1.grid(row=r, column=c, padx=2, pady=2)
-                e1.config(state='disabled')
+        return
 
     def on_click():
         global df2
@@ -108,7 +106,7 @@ def grafik():
             df2 = df[df['Imie i Nazwisko'] == val]
             # next_button.grid(row=1, column=0)
 
-        showdata()
+        showdata(df2)
 
     # --- main ---
 
@@ -272,8 +270,6 @@ def planistam2():
     def back():
         root.destroy()
         planistam1()
-    back = Button(root,text="Powrot",command=back)
-    back.pack()
 
     def myClick4():
         root.destroy()
@@ -282,11 +278,16 @@ def planistam2():
 
     myButton4 = Button(root, text='Capacity loading', command=myClick4)
     myButton4.pack()
+    back = Button(root,text="Powrot",command=back)
+    back.pack()
 
 def planistam3():
     root = Tk()
     root.title('Capacity loading')
     root.geometry("800x600")
-
-
+    def back():
+        root.destroy()
+        planistam2()
+    back = Button(root,text="Powrot",command=back)
+    back.pack()
 logowanie()
