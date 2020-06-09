@@ -86,6 +86,7 @@ def haslo():
     db = pymysql.connect('localhost', 'root', 'root', 'io')
     cursor = db.cursor()
     root = Tk()
+    root.configure(background='white')
     login_u = Label(root, text='Login:', font=('Arial', 10))
     login_u.configure(background='white')
     login_u.pack()
@@ -546,56 +547,155 @@ def logout(root):
     logowanie()
 
 
+# def planistam1():
+#     root = Tk()
+#     root.title('Menu 1 - Planista')
+#     root.geometry("800x600")
+#
+#     def myClick3():
+#         root.destroy()
+#         planistam2()
+#
+#     myButton3 = Button(root, text='Planowanie srednio terminowe', command=myClick3)
+#     myButton3.pack()
+#
+#     def logout():
+#         root.destroy()
+#         logowanie()
+#
+#     wyloguj = Button(root, text='Wyloguj', command=logout)
+#     wyloguj.pack()
+
+
 def planistam1():
     root = Tk()
-    root.title('Menu 1 - Planista')
+    root.title('Menu planowania srednio terminowego - Planista')
     root.geometry("800x600")
 
-    def myClick3():
+
+
+    def myClick4():
         root.destroy()
         planistam2()
-
-    myButton3 = Button(root, text='Planowanie srednio terminowe', command=myClick3)
-    myButton3.pack()
 
     def logout():
         root.destroy()
         logowanie()
 
+
+    myButton4 = Button(root, text='Capacity loading', command=myClick4)
+    myButton4.pack()
     wyloguj = Button(root, text='Wyloguj', command=logout)
     wyloguj.pack()
 
 
 def planistam2():
+    capacity_loading()
+
+
+def loadcapcal():
+
+    db = pymysql.connect('localhost', 'root', 'root', 'io')
+    cursor = db.cursor()
+
+    fetch_queries = 'Select calendar.id, calendar.Datagr From calendar ' \
+
+    # queries execution
+    cursor.execute(fetch_queries)
+    lines = cursor.fetchall()
+    calendarcap = []
+    for line in lines:
+        calendarcap.append(line)
+    calendarcap = pd.DataFrame(calendarcap)
+
+    db.commit()
+    db.close()
+    return calendarcap
+
+def loadWO():
+    db = pymysql.connect('localhost', 'root', 'root', 'io')
+    cursor = db.cursor()
+
+    fetch_queries ='Select wo.id, wo.quantity, wo.start_date, items.id, items.description, ' \
+                    'std_op.line, std_op.speed From wo Join wo_item ON wo.id = ' \
+                    'wo_fk Join items ON wo_item.item_fk = items.id Join item_std ON ' \
+                    'items.id = item_std.item_fk Join std_op ON item_std.std_op_fk = std_op.id'
+
+    # queries execution
+    cursor.execute(fetch_queries)
+    lines = cursor.fetchall()
+    wolist = []
+    for line in lines:
+        wolist.append(line)
+    wolist = pd.DataFrame(wolist)
+
+    db.commit()
+    db.close()
+    return wolist
+
+
+
+def capacity_loading():
+    calendar = pd.DataFrame(loadcapcal())
+    wolist = pd.DataFrame(loadWO())
     root = Tk()
-    root.title('Menu planowania srednio terminowego - Planista')
+    root.title('Capacity loading')
     root.geometry("800x600")
+
+
+    #calendar['1'].dt.week
+
+    calendar.columns = ['byle jak','Data']
+    # print(calendar.dtypes)
+    # calendar[['rok','miesiac','dzien']]=calendar.Data.str.split("-",expand=True)
+    # print(calendar)
+    #print(calendar.Data.apply(lambda x: pd.Series(str(x).split("-"))))
+    calendar['Data']= pd.to_datetime(calendar['Data'])
+    wolist[2] = pd.to_datetime(wolist[2])
+    # calendar.dropna(inplace=True)
+    # cal = calendar["Data"].split("-", n=2, expand=True)
+    # calendar["Rok"]=cal[1]
+    # calendar["Miesiac"]=cal[2]
+    # calendar["Dzien"]=cal[3]
+    # calendar.drop(columns=["Data"],inplace=True)
+    # print(calendar)
+
+
+    calendar['Nr tygodnia'] = calendar['Data'].dt.week
+    wolist[7] = wolist[2].dt.week
+
+
+
+
+
+
+    linesdrop = wolist.drop(columns=[0,1,2,3,4,6,7])
+    linesdrop = linesdrop.drop_duplicates(subset=[5])
+    wolist.columns = ['numer zlecenia', 'amount', 'data', 'indeks', 'opis', 'line', 'predkosc', 'week']
+    wolist['lin cap'] = wolist['predkosc'] * 24 * 5
+    # wolist = wolist.drop(['numer zlecenia','data','indeks','opis','predkosc'], axis=1)
+    # wolist = wolist[['num tyg','linia','ilosc','lin cap']]
+    # wolist = wolist.sort_values(by=['num tyg'])
+    # temp = wolist.groupby('num tyg')['ilosc'].sum()
+    demandreport = pd.pivot_table(wolist, values=['amount', 'lin cap'], index=['week'], columns=['line'], aggfunc={'amount': np.sum, 'lin cap': np.mean})
+    demandreport = demandreport.replace(to_replace=np.nan, value=0)
+
+    frame_data = Frame(root)
+
+    frame_data.pack(fill=BOTH, expand=1)
+
+    pt = Table(frame_data, dataframe=demandreport, width=100, showtoolbar=True, showstatusbar=True)
+    pt.showIndex()
+    pt.show()
+
+    #both = pd.merge(spacereport, demandreport, 'left', on= 'linia')
 
     def back():
         root.destroy()
         planistam1()
 
-    def myClick4():
-        root.destroy()
-        planistam3()
-
-    myButton4 = Button(root, text='Capacity loading', command=myClick4)
-    myButton4.pack()
     back = Button(root, text="Powrot", command=back)
     back.pack()
-
-
-def planistam3():
-    root = Tk()
-    root.title('Capacity loading')
-    root.geometry("800x600")
-
-    def back():
-        root.destroy()
-        planistam2()
-
-    back = Button(root, text="Powrot", command=back)
-    back.pack()
-
+    root.mainloop()
 
 logowanie()
