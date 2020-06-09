@@ -261,6 +261,8 @@ def loadWO():
 def capacity_loading():
     calendar = pd.DataFrame(loadcapcal())
     wolist = pd.DataFrame(loadWO())
+    root = Tk()
+
 
     #calendar['1'].dt.week
 
@@ -270,7 +272,7 @@ def capacity_loading():
     # print(calendar)
     #print(calendar.Data.apply(lambda x: pd.Series(str(x).split("-"))))
     calendar['Data']= pd.to_datetime(calendar['Data'])
-
+    wolist[2] = pd.to_datetime(wolist[2])
     # calendar.dropna(inplace=True)
     # cal = calendar["Data"].split("-", n=2, expand=True)
     # calendar["Rok"]=cal[1]
@@ -280,7 +282,24 @@ def capacity_loading():
     # print(calendar)
 
     calendar['Nr tygodnia'] = calendar['Data'].dt.week
-    print(calendar)
+    wolist[7] = wolist[2].dt.week
+    header = calendar['Nr tygodnia']
+    header.columns = ['num tyg']
+
+
+
+
+
+    linesdrop = wolist.drop(columns=[0,1,2,3,4,6,7])
+    linesdrop = linesdrop.drop_duplicates(subset=[5])
+    wolist.columns = ['numer zlecenia', 'ilosc', 'data', 'indeks', 'opis', 'linia', 'predkosc', 'num tyg']
+    wolist['lin cap'] = wolist['predkosc'] * 24 * 5
+    demandreport = pd.pivot_table(wolist, values=['ilosc', 'lin cap'], index=['num tyg'], columns=['linia'], aggfunc={'ilosc': np.sum, 'lin cap': np.mean}).transpose()
+    print(demandreport)
+
+    #both = pd.merge(spacereport, demandreport, 'left', on= 'linia')
+
+
 
     #isowekk = calendar.assign(wkiso = calendar[1].dt.week)
     #print(calendar)
