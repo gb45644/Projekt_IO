@@ -1,183 +1,143 @@
-from tkinter import *
 import pandas as pd
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from pandas import DataFrame
+import sys
 import pymysql
+import numpy as np
 
-# --- functions ---
-
-def showdata():
-    global table
-
-    # destroy old frame with table
-    if table:
-        table.destroy()
-
-    # create new frame with table
-    table = Frame(frame_data)
-    table.grid(row=0, column=0)
-
-    # fill frame with table
-    row, column = df2.shape
-    for r in range(row):
-        for c in range(3):
-            e1 = Entry(table)
-            e1.insert(1, df2.iloc[r, c])
-            e1.grid(row=r, column=c, padx=2, pady=2)
-            e1.config(state='disabled')
-
-def on_click():
-    global df2
-
-    val = selected.get()
-
-    if val == 'Wszystkie':
-        df2 = df
-        #next_button.grid_forget()
-    else:
-        df2 = df[ df['Imie i Nazwisko'] == val ]
-        #next_button.grid(row=1, column=0)
-
-    showdata()
-    next_button.grid(row=1, column=0)
-
-
-
-
-# --- main ---
-
-frame_data = None
-
-def graphiconn_button():
-    root.destroy()
-    grapg_changew()
-
-def grapg_changew():
-    root = Tk()
-    root.title('Grafik pracy')
-    root.geometry("800x600")
-
-
-    values = loadcalendar()
-    mapcal = values.drop(['Imie i Nazwisko', 'Praca', 'id emploee'], axis=1).drop_duplicates()
-    mapemp = values.drop(['Data', 'Praca', 'id calendar'], axis=1).drop_duplicates()
-
-    values = list(df['Imie i Nazwisko'].unique())
-    drop1 = StringVar()
-
-    options = OptionMenu(root, drop1, *values)
-    options.pack()
-
-    values2 = list(df['Data'].unique())
-    drop2 = StringVar()
-
-    options2 = OptionMenu(root, drop2, *values2)
-    options2.pack()
-
-    values3 = list(df['Praca'].unique())
-    drop3 = StringVar()
-
-    options3 = OptionMenu(root, drop3, *values3)
-    options3.pack()
-
-
-
-
-
-
-    def rlscalnd():
-
-        set_val = drop3.get()
-        calend_fk = drop2.get()
-        empl_fk = drop1.get()
-        mapempp = mapemp[mapemp['Imie i Nazwisko'] == empl_fk]
-        empl = mapempp.iloc[:, [1]]
-        empl_fk = empl.to_numpy()
-        print(empl_fk)
-
-        if set_val == "Wolne":
-            set_val = 0
-        else:
-            set_val = 1
-        # print(set_val)
-        releasecalendar(set_val, calend_fk, empl_fk)
-    load_button = Button(root, text='Zaladuj', command=rlscalnd)
-    load_button.pack()
-
-
-
-
-
-
-def releasecalendar(var1, var2, var3):
+def loadcapcal():
     db = pymysql.connect('localhost', 'root', 'root', 'io')
     cursor = db.cursor()
-    fetch_queries = "UPDATE graphic SET work= %s WHERE calendar_fk = %s AND emploee_list_fk=%s;"
-    var = var1,var2,var3
-    cursor.execute(fetch_queries, var)
-    db.commit()
-    db.close()
 
-
-
-
-def loadcalendar():
-    #database connection
-    db = pymysql.connect('localhost', 'root', 'root', 'io')
-    #Make sure to initiate the cursor to fetch rows
-    cursor = db.cursor()
-    # fetch all the queries in students_info Table
-    fetch_queries ='Select emploee_list.Name, calendar.Datagr, ' \
-                    'graphic.work, graphic.calendar_fk, graphic.emploee_list_fk From emploee_list Join graphic ON emploee_list.id = ' \
-                    'graphic.emploee_list_fk Join calendar ON calendar.id = graphic.calendar_fk '
-
-
-    #queries execution
+    fetch_queries = 'Select calendar.id, calendar.Datagr From calendar ' \
+ \
+    # queries execution
     cursor.execute(fetch_queries)
     lines = cursor.fetchall()
-    check = []
+    calendarcap = []
     for line in lines:
-       check.append(line)
-    #commit the connection
-    check = pd.DataFrame(check)
-    check.columns = ['Imie i Nazwisko', 'Data', 'Praca', 'id calendar', 'id emploee']
-    check['Praca'] = check['Praca'].replace({0:'Wolne', 1: 'Praca'})
+        calendarcap.append(line)
+    calendarcap = pd.DataFrame(calendarcap)
+
     db.commit()
-
-    # make a habit to close the database connection once you create it
     db.close()
-    return check
-
-df = loadcalendar()
-
-root = Tk()
-root.geometry('800x600')
-root.title('Grafik pracy')
-values = ['Wszystkie'] + list(df['Imie i Nazwisko'].unique())
-selected = StringVar()
-
-options = OptionMenu(root, selected, *values)
-options.pack()
-
-disp_button = Button(root, text='Pokaz grafik', command=on_click)
-disp_button.pack()
-
-# frame for table and button "Next Data"
-frame_data = Frame(root)
-frame_data.pack()
-
-changegra_button = Button(root, text="Zmiana grafiku", command=graphiconn_button)
-changegra_button.pack()
-
-exit_button = Button(root, text="Wyjscie", command=root.destroy) #trzepa podpiac powrót do poprzedniego menu
-exit_button.pack()
-
-# table with data - inside "frame_data" - without showing it
-table = Frame(frame_data)
-#table.grid(row=0, column=0)
+    return calendarcap
 
 
+def loadWO():
+    db = pymysql.connect('localhost', 'root', 'root', 'io')
+    cursor = db.cursor()
+
+    fetch_queries = 'Select wo.id, wo.quantity, wo.start_date, items.id, items.description, ' \
+                    'std_op.line, std_op.speed From wo Join wo_item ON wo.id = ' \
+                    'wo_fk Join items ON wo_item.item_fk = items.id Join item_std ON ' \
+                    'items.id = item_std.item_fk Join std_op ON item_std.std_op_fk = std_op.id'
+
+    # queries execution
+    cursor.execute(fetch_queries)
+    lines = cursor.fetchall()
+    wolist = []
+    for line in lines:
+        wolist.append(line)
+    wolist = pd.DataFrame(wolist)
+
+    db.commit()
+    db.close()
+    return wolist
 
 
-root.mainloop()
+calendar = pd.DataFrame(loadcapcal())
+wolist = pd.DataFrame(loadWO())
+
+# calendar['1'].dt.week
+
+calendar.columns = ['byle jak', 'Data']
+# print(calendar.dtypes)
+# calendar[['rok','miesiac','dzien']]=calendar.Data.str.split("-",expand=True)
+# print(calendar)
+# print(calendar.Data.apply(lambda x: pd.Series(str(x).split("-"))))
+calendar['Data'] = pd.to_datetime(calendar['Data'])
+wolist[2] = pd.to_datetime(wolist[2])
+# calendar.dropna(inplace=True)
+# cal = calendar["Data"].split("-", n=2, expand=True)
+# calendar["Rok"]=cal[1]
+# calendar["Miesiac"]=cal[2]
+# calendar["Dzien"]=cal[3]
+# calendar.drop(columns=["Data"],inplace=True)
+# print(calendar)
+
+calendar['Nr tygodnia'] = calendar['Data'].dt.week
+wolist[7] = wolist[2].dt.week
+header = calendar['Nr tygodnia']
+header.columns = ['num tyg']
+
+linesdrop = wolist.drop(columns=[0, 1, 2, 3, 4, 6, 7])
+linesdrop = linesdrop.drop_duplicates(subset=[5])
+wolist.columns = ['numer zlecenia', 'ilosc', 'data', 'indeks', 'opis', 'linia', 'predkosc', 'num tyg']
+wolist['lin cap'] = wolist['predkosc'] * 24 * 5
+data_single = pd.pivot_table(wolist, values=['ilosc', 'lin cap'], index=['num tyg'], columns=['linia'],
+                    aggfunc={'ilosc': np.sum, 'lin cap': np.mean}).transpose()
 
 
 
+
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+import pandas as pd
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(662, 512)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit.setObjectName("lineEdit")
+        self.verticalLayout.addWidget(self.lineEdit)
+        self.tableView = QtWidgets.QTableView(self.centralwidget)
+        self.tableView.setObjectName("tableView")
+        self.verticalLayout.addWidget(self.tableView)
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setObjectName("pushButton")
+        self.verticalLayout.addWidget(self.pushButton)
+        self.horizontalLayout.addLayout(self.verticalLayout)
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 662, 21))
+        self.menubar.setObjectName("menubar")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.pushButton.setText(_translate("MainWindow", "PushButton"))
+
+
+        self.pushButton.clicked.connect(self.btn_clk)
+
+        MainWindow.show()
+
+    def btn_clk(self):
+        path = self.lineEdit.text()
+        df = pd.read_csv(path)
+        self.tableView.set(df)
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())

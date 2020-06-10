@@ -1,7 +1,7 @@
 import pymysql
 import pandas as pd
 from tkinter import *
-from pandastable import Table, TableModel
+from pandastable import Table, RowHeader
 import numpy as np
 import pandastable
 import sys
@@ -283,10 +283,10 @@ def capacity_loading():
     # calendar.drop(columns=["Data"],inplace=True)
     # print(calendar)
 
+
     calendar['Nr tygodnia'] = calendar['Data'].dt.week
     wolist[7] = wolist[2].dt.week
-    header = calendar['Nr tygodnia']
-    header.columns = ['num tyg']
+
 
 
 
@@ -294,16 +294,23 @@ def capacity_loading():
 
     linesdrop = wolist.drop(columns=[0,1,2,3,4,6,7])
     linesdrop = linesdrop.drop_duplicates(subset=[5])
-    wolist.columns = ['numer zlecenia', 'ilosc', 'data', 'indeks', 'opis', 'linia', 'predkosc', 'num tyg']
+    wolist.columns = ['numer zlecenia', 'amount', 'data', 'indeks', 'opis', 'line', 'predkosc', 'week']
     wolist['lin cap'] = wolist['predkosc'] * 24 * 5
-    demandreport = pd.pivot_table(wolist, values=['ilosc', 'lin cap'], index=['num tyg',], columns=['linia'], aggfunc={'ilosc': np.sum, 'lin cap': np.mean}).transpose()
-    print(demandreport)
+    # wolist = wolist.drop(['numer zlecenia','data','indeks','opis','predkosc'], axis=1)
+    # wolist = wolist[['num tyg','linia','ilosc','lin cap']]
+    # wolist = wolist.sort_values(by=['num tyg'])
+    # temp = wolist.groupby('num tyg')['ilosc'].sum()
+    demandreport = pd.pivot_table(wolist, values=['amount', 'lin cap'], index=['week'], columns=['line'], aggfunc={'amount': np.sum, 'lin cap': np.mean})
+    demandreport = demandreport.replace(to_replace=np.nan, value=0)
+
     frame_data = Frame(root)
 
-
-    pt = Table(frame_data, dataframe=demandreport, showtoolbar=True, showstatusbar=True)
-    pt.show()
     frame_data.pack(fill=BOTH, expand=1)
+
+    pt = Table(frame_data, dataframe=demandreport, width=100, showtoolbar=True, showstatusbar=True)
+    pt.showIndex()
+    pt.show()
+
     #both = pd.merge(spacereport, demandreport, 'left', on= 'linia')
 
     root.mainloop()
