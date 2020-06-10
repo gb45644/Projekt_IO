@@ -60,6 +60,7 @@ def logowanie():
             kierownikm1()
         else:
             wrong()
+
     def wrong():
         top = Tk()
         top.eval('tk::PlaceWindow %s center' % top.winfo_toplevel())
@@ -67,45 +68,49 @@ def logowanie():
         messagebox.showwarning(title="Blad", message='Zly login i/lub haslo!')
         top.deiconify()
         top.destroy()
+
     def myClick2():
         root.destroy()
+
     def zmiana_hasla():
         root.destroy()
         haslo()
+
     myButton = Button(root, text='Zaloguj się', command=myClick)
-    myButton.pack()
-
-
+    myButton.place(x=364, y=150)
     zmiana = Button(root, text='Zmien haslo', command=zmiana_hasla)
-    zmiana.pack()
+    zmiana.place(x=360, y=180)
     myButton2 = Button(root, text='Wyjdź', command=myClick2)
-    myButton2.pack()
+    myButton2.place(x=375, y=210)
     root.mainloop()
+
+
 def haslo():
 
     db = pymysql.connect('localhost', 'root', 'root', 'io')
     cursor = db.cursor()
     root = Tk()
+    root.geometry("600x400")
     root.configure(background='white')
     login_u = Label(root, text='Login:', font=('Arial', 10))
     login_u.configure(background='white')
     login_u.pack()
-    polelogin = Entry(root, width=50)
+    polelogin = Entry(root, width=40)
     polelogin.pack()
     st_haslo = Label(root, text='Stare Hasło:', font=('Arial', 10))
     st_haslo.configure(background='white')
     st_haslo.pack()
-    pole_st = Entry(root, width=50, show='*')
+    pole_st = Entry(root, width=40, show='*')
     pole_st.pack()
     new_haslo = Label(root, text='Nowe Hasło(Min. 8 znakow):', font=('Arial', 10))
     new_haslo.configure(background='white')
     new_haslo.pack()
-    new_pole = Entry(root, width=50, show='*')
+    new_pole = Entry(root, width=40, show='*')
     new_pole.pack()
     pow_haslo = Label(root, text='Powtorz Hasło:', font=('Arial', 10))
     pow_haslo.configure(background='white')
     pow_haslo.pack()
-    pow_pole = Entry(root, width=50, show='*')
+    pow_pole = Entry(root, width=40, show='*')
     pow_pole.pack()
 
     def zmiana():
@@ -139,6 +144,7 @@ def haslo():
         messagebox.showwarning(title="Blad", message='Pole/a PUSTE!')
         top.deiconify()
         top.destroy()
+
     def success():
         top = Tk()
         top.eval('tk::PlaceWindow %s center' % top.winfo_toplevel())
@@ -156,6 +162,7 @@ def haslo():
         messagebox.showwarning(title="Blad", message='Hasla roznia sie!')
         top.deiconify()
         top.destroy()
+
     def wrong():
         top = Tk()
         top.eval('tk::PlaceWindow %s center' % top.winfo_toplevel())
@@ -163,6 +170,7 @@ def haslo():
         messagebox.showwarning(title="Blad", message='Zly login i/lub haslo!')
         top.deiconify()
         top.destroy()
+
     def short():
         top = Tk()
         top.eval('tk::PlaceWindow %s center' % top.winfo_toplevel())
@@ -170,10 +178,13 @@ def haslo():
         messagebox.showwarning(title="Blad", message='Haslo jest za krotkie!')
         top.deiconify()
         top.destroy()
+
     def accept():
         zmiana()
-    akceptuj = Button(root, text='Zmien', command= accept)
+
+    akceptuj = Button(root, text='Zmien', command=accept)
     akceptuj.pack()
+
     def back():
         root.destroy()
         logowanie()
@@ -182,6 +193,7 @@ def haslo():
     wyloguj.pack()
 
     root.mainloop()
+
 
 def nowy():
     root = Tk()
@@ -311,7 +323,6 @@ def usun():
 
         response = messagebox.askyesno(title="Usun", message='Czy na pewno chcesz to zrobic?', )
         if response == False:
-            print("nieee")
             root.destroy()
             usun()
         top.deiconify()
@@ -572,8 +583,6 @@ def planistam1():
     root.title('Menu planowania srednio terminowego - Planista')
     root.geometry("800x600")
 
-
-
     def myClick4():
         root.destroy()
         planistam2()
@@ -581,7 +590,6 @@ def planistam1():
     def logout():
         root.destroy()
         logowanie()
-
 
     myButton4 = Button(root, text='Capacity loading', command=myClick4)
     myButton4.pack()
@@ -612,11 +620,12 @@ def loadcapcal():
     db.close()
     return calendarcap
 
+
 def loadWO():
     db = pymysql.connect('localhost', 'root', 'root', 'io')
     cursor = db.cursor()
 
-    fetch_queries ='Select wo.id, wo.quantity, wo.start_date, items.id, items.description, ' \
+    fetch_queries = 'Select wo.id, wo.quantity, wo.start_date, items.id, items.description, ' \
                     'std_op.line, std_op.speed From wo Join wo_item ON wo.id = ' \
                     'wo_fk Join items ON wo_item.item_fk = items.id Join item_std ON ' \
                     'items.id = item_std.item_fk Join std_op ON item_std.std_op_fk = std_op.id'
@@ -642,15 +651,14 @@ def capacity_loading():
     root.title('Capacity loading')
     root.geometry("800x600")
 
+    # calendar['1'].dt.week
 
-    #calendar['1'].dt.week
-
-    calendar.columns = ['byle jak','Data']
+    calendar.columns = ['byle jak', 'Data']
     # print(calendar.dtypes)
     # calendar[['rok','miesiac','dzien']]=calendar.Data.str.split("-",expand=True)
     # print(calendar)
-    #print(calendar.Data.apply(lambda x: pd.Series(str(x).split("-"))))
-    calendar['Data']= pd.to_datetime(calendar['Data'])
+    # print(calendar.Data.apply(lambda x: pd.Series(str(x).split("-"))))
+    calendar['Data'] = pd.to_datetime(calendar['Data'])
     wolist[2] = pd.to_datetime(wolist[2])
     # calendar.dropna(inplace=True)
     # cal = calendar["Data"].split("-", n=2, expand=True)
@@ -664,12 +672,7 @@ def capacity_loading():
     calendar['Nr tygodnia'] = calendar['Data'].dt.week
     wolist[7] = wolist[2].dt.week
 
-
-
-
-
-
-    linesdrop = wolist.drop(columns=[0,1,2,3,4,6,7])
+    linesdrop = wolist.drop(columns=[0, 1, 2, 3, 4, 6, 7])
     linesdrop = linesdrop.drop_duplicates(subset=[5])
     wolist.columns = ['numer zlecenia', 'amount', 'data', 'indeks', 'opis', 'line', 'predkosc', 'week']
     wolist['lin cap'] = wolist['predkosc'] * 24 * 5
@@ -689,7 +692,7 @@ def capacity_loading():
     pt.showIndex()
     pt.show()
 
-    #both = pd.merge(spacereport, demandreport, 'left', on= 'linia')
+    # both = pd.merge(spacereport, demandreport, 'left', on= 'linia')
 
     def back():
         root.destroy()
@@ -698,5 +701,6 @@ def capacity_loading():
     back = Button(root, text="Powrot", command=back)
     back.pack()
     root.mainloop()
+
 
 logowanie()
