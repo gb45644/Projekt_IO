@@ -677,8 +677,10 @@ def capacity_loading():
     # wolist = wolist[['num tyg','linia','ilosc','lin cap']]
     # wolist = wolist.sort_values(by=['num tyg'])
     # temp = wolist.groupby('num tyg')['ilosc'].sum()
+    demandreport['Week no'] = 'week'
+    print(demandreport)
     demandreport = pd.pivot_table(wolist, values=['amount', 'lin cap'], index=['week'], columns=['line'], aggfunc={'amount': np.sum, 'lin cap': np.mean})
-    demandreport = demandreport.replace(to_replace=np.nan, value=0)
+    demandreport = demandreport.replace(to_replace=np.nan, value=0).transpose()
 
     frame_data = Frame(root)
 

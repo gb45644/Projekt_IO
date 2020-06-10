@@ -296,7 +296,7 @@ def capacity_loading():
     linesdrop = linesdrop.drop_duplicates(subset=[5])
     wolist.columns = ['numer zlecenia', 'ilosc', 'data', 'indeks', 'opis', 'linia', 'predkosc', 'num tyg']
     wolist['lin cap'] = wolist['predkosc'] * 24 * 5
-    demandreport = pd.pivot_table(wolist, values=['ilosc', 'lin cap'], index=['num tyg'], columns=['linia'], aggfunc={'ilosc': np.sum, 'lin cap': np.mean}).transpose()
+    demandreport = pd.pivot_table(wolist, values=['ilosc', 'lin cap'], index=['num tyg',], columns=['linia'], aggfunc={'ilosc': np.sum, 'lin cap': np.mean}).transpose()
     print(demandreport)
     frame_data = Frame(root)
 
