@@ -1,4 +1,3 @@
-# from LoadData import *
 from tkinter import *
 import pandas as pd
 import pymysql
@@ -33,7 +32,12 @@ def logowanie():
     theLabel1 = Label(root, text='Ultimate planning tool', font=('Arial', 24))
     theLabel1.configure(background='white')
     theLabel1.pack()
-
+    authors = Label(root, text='By Łukasz Turowski \n Bartosz Gałka', font=('Arial', 8))
+    authors.configure(background='white')
+    authors.place(x=551, y=20)
+    copyright = Label(root, text='© copyright, all right reserved', font=('Arial', 18))
+    copyright.configure(background='white')
+    copyright.place(x=471, y=560)
     theLabel2 = Label(root, text='Login:', font=('Arial', 18))
     theLabel2.configure(background='white')
     theLabel2.pack()
@@ -91,6 +95,7 @@ def haslo():
     cursor = db.cursor()
     root = Tk()
     root.geometry("600x400")
+    root.title('Zmien Haslo')
     root.configure(background='white')
     login_u = Label(root, text='Login:', font=('Arial', 10))
     login_u.configure(background='white')
@@ -198,16 +203,17 @@ def haslo():
 def nowy():
     root = Tk()
     root.geometry("800x600")
+    root.title('Dodaj Pracownika')
     db = pymysql.connect('localhost', 'root', 'root', 'io')
     imie = Label(root, text='Imie:', font=('Arial', 10))
-    imie.configure(background='white')
+    imie.configure()
     imie.pack()
 
     poleimie = Entry(root, width=20)
     poleimie.pack()
 
     nazwisko = Label(root, text='Nazwisko:', font=('Arial', 10))
-    nazwisko.configure(background='white')
+    nazwisko.configure()
     nazwisko.pack()
 
     polenazwisko = Entry(root, width=20)
@@ -301,6 +307,7 @@ def nowy():
 def usun():
     root = Tk()
     root.geometry("800x600")
+    root.title('Usun Pracownika')
     db = pymysql.connect('localhost', 'root', 'root', 'io')
 
     cursor = db.cursor()
@@ -419,7 +426,7 @@ def grafik():
 
     def grapg_changew():
         root = Tk()
-        root.title('Grafik pracy')
+        root.title('Grafik Pracy')
         root.geometry("800x600")
 
         values = loadcalendar()
@@ -562,41 +569,31 @@ def logout(root):
     logowanie()
 
 
-# def planistam1():
-#     root = Tk()
-#     root.title('Menu 1 - Planista')
-#     root.geometry("800x600")
-#
-#     def myClick3():
-#         root.destroy()
-#         planistam2()
-#
-#     myButton3 = Button(root, text='Planowanie srednio terminowe', command=myClick3)
-#     myButton3.pack()
-#
-#     def logout():
-#         root.destroy()
-#         logowanie()
-#
-#     wyloguj = Button(root, text='Wyloguj', command=logout)
-#     wyloguj.pack()
-
 
 def planistam1():
     root = Tk()
     root.title('Menu planowania srednio terminowego - Planista')
     root.geometry("800x600")
 
+    def wo_list():
+        root.destroy()
+        zlecenia()
     def myClick4():
         root.destroy()
         planistam2()
-
+    def wo_date():
+        root.destroy()
+        zmiana_zlecenia()
     def logout():
         root.destroy()
         logowanie()
 
     myButton4 = Button(root, text='Capacity loading', command=myClick4)
     myButton4.pack()
+    pok_zle = Button(root, text='Lista zlecen', command=wo_list)
+    pok_zle.pack()
+    zmiana_zle = Button(root, text='Zmien date zlecenia', command = wo_date)
+    zmiana_zle.pack()
     wyloguj = Button(root, text='Wyloguj', command=logout)
     wyloguj.pack()
 
@@ -604,6 +601,63 @@ def planistam1():
 def planistam2():
     capacity_loading()
 
+def zmiana_zlecenia():
+    root = Tk()
+    root.geometry("800x600")
+    root.title('Zmiana Daty')
+    db = pymysql.connect('localhost', 'root', 'root', 'io')
+    cursor = db.cursor()
+    cursor.execute("SELECT id FROM wo")
+    lines = cursor.fetchall()
+    wo_id = []
+    for line in lines:
+        wo_id.append(line)
+    cursor.execute("SELECT Datagr FROM calendar")
+    wo_date = []
+    liness = cursor.fetchall()
+    for linee in liness:
+        wo_date.append(linee)
+
+    wo_id = pd.DataFrame(wo_id)
+    wo_date = pd.DataFrame(wo_date)
+    wo_id.columns = ['id']
+    wo_date.columns = ['data']
+    select_id = wo_id['id'].unique()
+    lab_id = Label(root, text='ID Zlecenia:')
+    lab_id.place(x=310, y=5)
+    sel_id = StringVar()
+    id_list = OptionMenu(root, sel_id, *select_id)
+    id_list.pack()
+    lab_date = Label(root, text='Data Zlecenia:')
+    lab_date.place(x=300, y=35)
+    select_date = wo_date['data'].unique()
+    sel_da = StringVar()
+    date_list = OptionMenu(root, sel_da, *select_date)
+    date_list.pack()
+
+
+    def change():
+        new_date = sel_da.get()
+        get_id = sel_id.get()
+        up_date(new_date,get_id)
+    def up_date(new_date, get_id):
+        date = new_date
+        wo_id = get_id
+        cursor.execute("UPDATE wo SET start_date = %s WHERE id = %s", (date, wo_id))
+        dat = Label(root, text='Zmieniono')
+        dat.pack()
+        dat.after(1000, lambda: dat.pack_forget())
+        db.commit()
+
+    change_date = Button(root, text='Zmien date', command = change)
+    change_date.pack()
+    def back():
+        root.destroy()
+        planistam1()
+    choose3 = Button(root, text='Wstecz', command=back)
+    choose3.pack()
+    db.commit()
+    root.mainloop()
 
 def loadcapcal():
 
@@ -646,7 +700,45 @@ def loadWO():
     db.close()
     return wolist
 
+def zlecenia():
+    def show(wolist2):
+        wolist2 = wolist2.drop(['Line'], axis=1)
+        data_frame = Frame(root)
+        data_frame.pack(fill=BOTH, expand=1)
+        pt = Table(data_frame, dataframe=wolist2, width=100, showstatusbar=True, showtoolbar=True)
+        pt.expandColumns(factor=10)
+        pt.show()
+        def destroy():
+            root.destroy()
+            zlecenia()
 
+        des_butt = Button(root, text='Zresetuj', fg="red", command=destroy)
+        des_butt.pack()
+    def pok_zle():
+        global wolist2
+        wo = choose1.get()
+        wolist2 = wolist[wolist['Line'] == wo]
+        wo_options.after(1, lambda: wo_options.pack_forget())
+        choose2.after(1, lambda: choose2.pack_forget())
+        show(wolist2)
+    root = Tk()
+    root.geometry("800x600")
+    root.title('Lista Zlecen')
+    wolist = loadWO()
+    wolist = wolist.drop(columns=[6])
+    wolist.columns = ['WO number', 'Quantity', 'Date', 'Index', 'Description', 'Line']
+    wo_opt = list(wolist['Line'].unique())
+    choose1 = StringVar()
+    wo_options = OptionMenu(root, choose1, *wo_opt)
+    wo_options.pack()
+    choose2 = Button(root, text='Pokaz zlecenia', command=pok_zle)
+    choose2.pack()
+    def back():
+        root.destroy()
+        planistam1()
+    choose3 = Button(root, text='Wstecz', command=back)
+    choose3.pack()
+    root.mainloop()
 
 def capacity_loading():
     calendar = pd.DataFrame(loadcapcal())
@@ -678,14 +770,14 @@ def capacity_loading():
 
     linesdrop = wolist.drop(columns=[0, 1, 2, 3, 4, 6, 7])
     linesdrop = linesdrop.drop_duplicates(subset=[5])
-    wolist.columns = ['numer zlecenia', 'amount', 'data', 'indeks', 'opis', 'line', 'predkosc', 'week']
+    wolist.columns = ['numer zlecenia', 'quantity', 'data', 'indeks', 'opis', 'line', 'predkosc', 'week']
     wolist['lin cap'] = wolist['predkosc'] * 24 * 5
     # wolist = wolist.drop(['numer zlecenia','data','indeks','opis','predkosc'], axis=1)
     # wolist = wolist[['num tyg','linia','ilosc','lin cap']]
     # wolist = wolist.sort_values(by=['num tyg'])
     # temp = wolist.groupby('num tyg')['ilosc'].sum()
     wolist['week'] = 'week ' + wolist['week'].astype(str)
-    demandreport = pd.pivot_table(wolist, values=['lin cap', 'amount'], index=['week'], columns=['line'], aggfunc={'amount': np.sum, 'lin cap': np.mean})
+    demandreport = pd.pivot_table(wolist, values=['lin cap', 'quantity'], index=['week'], columns=['line'], aggfunc={'quantity': np.sum, 'lin cap': np.mean})
     demandreport = demandreport.replace(to_replace=np.nan, value=0).transpose()
 
     frame_data = Frame(root)
