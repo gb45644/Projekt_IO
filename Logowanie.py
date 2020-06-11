@@ -29,12 +29,12 @@ def logowanie():
     root.geometry("800x600")
     root.configure(background='white')
 
-    theLabel1 = Label(root, text='Ultimate planning tool', font=('Arial', 24))
+    theLabel1 = Label(root, text='Ultimate Planning Tool', font=('Arial', 24))
     theLabel1.configure(background='white')
     theLabel1.pack()
     authors = Label(root, text='By Łukasz Turowski \n Bartosz Gałka', font=('Arial', 8))
     authors.configure(background='white')
-    authors.place(x=551, y=20)
+    authors.place(x=557, y=18)
     copyright = Label(root, text='© copyright, all right reserved', font=('Arial', 18))
     copyright.configure(background='white')
     copyright.place(x=471, y=560)
@@ -388,10 +388,10 @@ def grafik():
         frame_data.pack(fill=BOTH, expand=1)
 
         df2 = df2.drop(['id calendar', 'id emploee'], axis=1)
-        table = pt = Table(frame_data, dataframe=df2, showtoolbar=False, showstatusbar=True)
+        pt = Table(frame_data, dataframe=df2, showtoolbar=False, showstatusbar=True)
         pt.show()
 
-        # destroy old frame with table
+
         def destroy():
             root.destroy()
             grafik()
@@ -408,15 +408,15 @@ def grafik():
 
         if val == 'Wszystkie':
             df2 = df
-            # next_button.grid_forget()
+
         else:
             df2 = df[df['Imie i Nazwisko'] == val]
-            # next_button.grid(row=1, column=0)
+
         options.after(1, lambda: options.pack_forget())
         disp_button.after(1, lambda: disp_button.pack_forget())
         showdata(df2)
 
-    # --- main ---
+
 
     frame_data = None
 
@@ -486,28 +486,28 @@ def grafik():
         db.close()
 
     def loadcalendar():
-        # database connection
+
         db = pymysql.connect('localhost', 'root', 'root', 'io')
-        # Make sure to initiate the cursor to fetch rows
+
         cursor = db.cursor()
-        # fetch all the queries in students_info Table
+
         fetch_queries = 'Select emploee_list.Name, calendar.Datagr, ' \
                         'graphic.work, graphic.calendar_fk, graphic.emploee_list_fk From emploee_list Join graphic ON emploee_list.id = ' \
                         'graphic.emploee_list_fk Join calendar ON calendar.id = graphic.calendar_fk '
 
-        # queries execution
+
         cursor.execute(fetch_queries)
         lines = cursor.fetchall()
         check = []
         for line in lines:
             check.append(line)
-        # commit the connection
+
         check = pd.DataFrame(check)
         check.columns = ['Imie i Nazwisko', 'Data', 'Praca', 'id calendar', 'id emploee']
         check['Praca'] = check['Praca'].replace({0: 'Wolne', 1: 'Praca'})
         db.commit()
 
-        # make a habit to close the database connection once you create it
+
         db.close()
         return check
 
@@ -525,7 +525,7 @@ def grafik():
     disp_button = Button(root, text='Pokaz grafik', command=on_click)
     disp_button.pack()
 
-    # frame for table and button "Next Data"
+
     frame_data = Frame(root)
     frame_data.pack()
 
@@ -553,9 +553,7 @@ def grafik():
     wyloguj = Button(root, text='Wyloguj', command=logout)
     wyloguj.pack()
 
-    # table with data - inside "frame_data" - without showing it
-    table = Frame(frame_data)
-    # table.grid(row=0, column=0)
+
 
     root.mainloop()
 
@@ -666,7 +664,7 @@ def loadcapcal():
 
     fetch_queries = 'Select calendar.id, calendar.Datagr From calendar ' \
 
-    # queries execution
+
     cursor.execute(fetch_queries)
     lines = cursor.fetchall()
     calendarcap = []
@@ -688,7 +686,7 @@ def loadWO():
                     'wo_fk Join items ON wo_item.item_fk = items.id Join item_std ON ' \
                     'items.id = item_std.item_fk Join std_op ON item_std.std_op_fk = std_op.id'
 
-    # queries execution
+
     cursor.execute(fetch_queries)
     lines = cursor.fetchall()
     wolist = []
