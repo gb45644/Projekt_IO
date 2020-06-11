@@ -389,7 +389,7 @@ def grafik():
             root.destroy()
             grafik()
 
-        des_butt = Button(root, text='Zresetuj', command=destroy)
+        des_butt = Button(root, text='Zresetuj', fg="red", command=destroy)
         des_butt.pack()
 
         return
@@ -405,7 +405,8 @@ def grafik():
         else:
             df2 = df[df['Imie i Nazwisko'] == val]
             # next_button.grid(row=1, column=0)
-
+        options.after(1, lambda: options.pack_forget())
+        disp_button.after(1, lambda: disp_button.pack_forget())
         showdata(df2)
 
     # --- main ---
