@@ -451,7 +451,9 @@ def grafik():
                 set_val = 0
             else:
                 set_val = 1
-
+            cal = Label(root, text='Zmieniono')
+            cal.pack()
+            cal.after(1000, lambda: cal.pack_forget())
             releasecalendar(set_val, calend_fk, empl_fk)
 
         load_button = Button(root, text='Zaladuj', command=rlscalnd)
@@ -471,6 +473,7 @@ def grafik():
                         "calendar.id = graphic.calendar_fk SET work= %s WHERE Datagr = %s AND Name =%s; "
         var = var1, var2, var3
         cursor.execute(fetch_queries, var)
+
         db.commit()
         db.close()
 
