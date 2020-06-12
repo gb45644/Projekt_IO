@@ -81,11 +81,11 @@ def logowanie():
         haslo()
 
     myButton = Button(root, text='Zaloguj się', command=myClick)
-    myButton.place(x=364, y=150)
+    myButton.pack(pady=5)
     zmiana = Button(root, text='Zmien haslo', command=zmiana_hasla)
-    zmiana.place(x=360, y=180)
+    zmiana.pack(pady=5)
     myButton2 = Button(root, text='Wyjdź', command=myClick2)
-    myButton2.place(x=375, y=210)
+    myButton2.pack(pady=5)
     root.mainloop()
 
 
@@ -263,20 +263,24 @@ def nowy():
             success()
 
             cursor = db.cursor()
-            id_em = 'SELECT COUNT(*) FROM emploee_list'
+            id_em = 'SELECT id FROM emploee_list'
             cursor.execute(id_em)
             id_emp = cursor.fetchall()
+
             last_id = id_emp[0][0] + 1
 
-            id_cal = 'SELECT COUNT(*) FROM graphic'
+            id_cal = 'SELECT id FROM graphic'
             cursor.execute(id_cal)
             id_cale = cursor.fetchall()
-            last_cal = id_cale[0][0] + 1
+
+
+            last_cal = id_cale[0][0] + 2
+
             full = name + ' ' + sur
 
-            insert_name = 'INSERT INTO emploee_list (Name, id) VALUES (%s,%s);'
+            insert_name = 'INSERT INTO emploee_list (Name) VALUES (%s);'
 
-            cursor.execute(insert_name, (full, last_id))
+            cursor.execute(insert_name, full)
 
             select_id = 'SELECT id FROM emploee_list WHERE Name LIKE %s;'
             cursor.execute(select_id, full)
@@ -288,8 +292,8 @@ def nowy():
             end = cal_cnt[0][0]
             temp = np.arange(1, end + 1, 1)
             for i in range(np.size(temp)):
-                cursor.execute("INSERT INTO graphic (id, calendar_fk, emploee_list_fk, work) VALUES (%s, %s, %s, 1);",
-                               (last_cal + i, i + 1, emp_fk))
+                cursor.execute("INSERT INTO graphic (calendar_fk, emploee_list_fk, work) VALUES (%s, %s, 1);",
+                               (i + 1, emp_fk))
                 db.commit()
 
     dodajcos = Button(root, text='Dodaj pracownika', command=add)
@@ -523,35 +527,35 @@ def grafik():
     options.pack()
 
     disp_button = Button(root, text='Pokaz grafik', command=on_click)
-    disp_button.pack()
+    disp_button.pack(pady=5)
 
 
     frame_data = Frame(root)
     frame_data.pack()
 
     changegra_button = Button(root, text="Zmiana grafiku", command=graphiconn_button)
-    changegra_button.pack()
+    changegra_button.pack(pady=5)
 
     def add_work():
         root.destroy()
         nowy()
 
     dodaj_n = Button(root, text='Dodaj pracownika', command=add_work)
-    dodaj_n.pack()
+    dodaj_n.pack(pady=5)
 
     def del_work():
         root.destroy()
         usun()
 
     dodaj_n = Button(root, text='Usun pracownika', command=del_work)
-    dodaj_n.pack()
+    dodaj_n.pack(pady=5)
 
     def logout():
         root.destroy()
         logowanie()
 
     wyloguj = Button(root, text='Wyloguj', command=logout)
-    wyloguj.pack()
+    wyloguj.pack(pady=5)
 
 
 
@@ -587,13 +591,13 @@ def planistam1():
         logowanie()
 
     myButton4 = Button(root, text='Capacity loading', command=myClick4)
-    myButton4.pack()
+    myButton4.pack(pady=5)
     pok_zle = Button(root, text='Lista zlecen', command=wo_list)
-    pok_zle.pack()
+    pok_zle.pack(pady=5)
     zmiana_zle = Button(root, text='Zmien date zlecenia', command = wo_date)
-    zmiana_zle.pack()
+    zmiana_zle.pack(pady=5)
     wyloguj = Button(root, text='Wyloguj', command=logout)
-    wyloguj.pack()
+    wyloguj.pack(pady=5)
 
 
 def planistam2():
